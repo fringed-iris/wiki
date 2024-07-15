@@ -1,1 +1,2 @@
-scripts and files for florr.io JPwiki
+# 概要
+florr.io JPwikiに用いられるソースコード群。
