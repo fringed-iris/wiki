@@ -1228,7 +1228,7 @@ span.comment_info span {
 	display: inline-block
 }
 
-.comment_poster {
+.comment_user {
 	background-color: var(--ca-red)
 }
 
@@ -2042,7 +2042,7 @@ ul.select li:last-child {
 /*petalcodeのタレント選択欄*/
 .talents {
 	display: flex;
-	flex-wrap:wrap;
+	flex-wrap: wrap;
 	gap: 1em;
 	margin-bottom: 1em;
 }
