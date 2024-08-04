@@ -641,6 +641,9 @@ const createPetalDataTable = (originId, options) => {
             });
         }
 
+        //specialStatusは、FieldとColumnの簡易指定版
+        //isHiddenを使用することで、specialFieldArrとして扱うことができるようにする
+        //Fieldに新しいプロパティが追加されるたびにここを更新すること
         //specialStatus
         if (options.specialStatus) {
 
@@ -648,7 +651,9 @@ const createPetalDataTable = (originId, options) => {
 
                 let opts = options.specialStatus[i];
                 let Fopts, Copts;
+                
                 {
+                    //specialStatusのオプションを、fieldとcolumnに振り分ける。補完は行わない
                     const convertSpecialStatusInto = function (options) {
 
                         let Fopts = {};
@@ -674,7 +679,7 @@ const createPetalDataTable = (originId, options) => {
                         //other
                         Fopts.base = options.base;
                         Fopts.increase = options.increase;
-                        if (opts.type == "rarity") Fopts.uniqueDatas = options.uniqueRarityNumbers;
+                        if (opts.type == "rarity") Fopts.uniqueDatas = options.uniqueDatas ?? options.uniqueRarityNumbers; //後方互換
                         if (opts.type == "unique") Fopts.uniqueDatas = options.uniqueDatas;
                         Fopts.baseFieldId = options.baseFieldId;
                         Fopts.secondBaseFieldId = options.secondBaseFieldId;
