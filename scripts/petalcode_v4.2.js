@@ -320,7 +320,7 @@ const Column = class {
             }
 
             //style
-            cell.style.width = this.width;
+            cell.style.width = this.width + "px";
             cell.style.textAlign = "center";
         }
     }
