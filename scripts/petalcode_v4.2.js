@@ -274,7 +274,8 @@ const Column = class {
 
     updateView() {
         let fix = v => {
-            if (typeof v != "number") v = 0;
+            if(typeof v === "string") return this.first + v + this.last;
+            if (typeof v !== "number") v = 0;
             return this.first + v.toFixed(this.toFixed) + this.last;
         }
 
@@ -303,7 +304,6 @@ const Column = class {
                 }
 
                 //textContent
-
                 cell.textContent = fix(v1);
 
                 if (this.viewType == "reload") {
@@ -589,7 +589,7 @@ const createPetalDataTable = (originId, options) => {
             "name": "レアリティ",
             "viewType": "rarity",
             "fieldId": "petalRarity",
-            "width": 65,
+            "width": 95,
         }));
 
         options.columnOptions.petalCount = {
