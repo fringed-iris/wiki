@@ -274,7 +274,6 @@ const Column = class {
 
     updateView() {
         let fix = v => {
-            if(typeof v === "string") return this.first + v + this.last;
             if (typeof v !== "number") v = 0;
             return this.first + v.toFixed(this.toFixed) + this.last;
         }
