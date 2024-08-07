@@ -699,12 +699,11 @@ Object.assign(window.florr, {//Object.assign()でオブジェクトの完全上�
 
     //リダイレクトされたかどうか検知してポップアップを表示
     redirect() {
-        const ADR = (() => {
-            const _ = new URL(location.href);
-            return _.searchParams.get("rfrom");
-        })();
+        const ADR = sessionStorage.getItem("redirect");
 
         if (ADR) {
+            sessionStorage.setItem("redirect","");
+
             const WRAP = document.getElementById("wrap");
 
             const ANM = {
