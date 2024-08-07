@@ -274,7 +274,7 @@ const Column = class {
 
     updateView() {
         let fix = v => {
-            if (typeof v != "number") v = 0;
+            if (typeof v !== "number") v = 0;
             return this.first + v.toFixed(this.toFixed) + this.last;
         }
 
@@ -303,7 +303,6 @@ const Column = class {
                 }
 
                 //textContent
-
                 cell.textContent = fix(v1);
 
                 if (this.viewType == "reload") {
@@ -320,7 +319,7 @@ const Column = class {
             }
 
             //style
-            cell.style.width = this.width;
+            cell.style.width = this.width + "px";
             cell.style.textAlign = "center";
         }
     }
@@ -589,7 +588,7 @@ const createPetalDataTable = (originId, options) => {
             "name": "レアリティ",
             "viewType": "rarity",
             "fieldId": "petalRarity",
-            "width": 65,
+            "width": 95,
         }));
 
         options.columnOptions.petalCount = {
@@ -641,6 +640,9 @@ const createPetalDataTable = (originId, options) => {
             });
         }
 
+        //specialStatusは、FieldとColumnの簡易指定版
+        //isHiddenを使用することで、specialFieldArrとして扱うことができるようにする
+        //Fieldに新しいプロパティが追加されるたびにここを更新すること
         //specialStatus
         if (options.specialStatus) {
 
@@ -648,7 +650,9 @@ const createPetalDataTable = (originId, options) => {
 
                 let opts = options.specialStatus[i];
                 let Fopts, Copts;
+                
                 {
+                    //specialStatusのオプションを、fieldとcolumnに振り分ける。補完は行わない
                     const convertSpecialStatusInto = function (options) {
 
                         let Fopts = {};
@@ -674,7 +678,7 @@ const createPetalDataTable = (originId, options) => {
                         //other
                         Fopts.base = options.base;
                         Fopts.increase = options.increase;
-                        if (opts.type == "rarity") Fopts.uniqueDatas = options.uniqueRarityNumbers;
+                        if (opts.type == "rarity") Fopts.uniqueDatas = options.uniqueDatas ?? options.uniqueRarityNumbers; //後方互換
                         if (opts.type == "unique") Fopts.uniqueDatas = options.uniqueDatas;
                         Fopts.baseFieldId = options.baseFieldId;
                         Fopts.secondBaseFieldId = options.secondBaseFieldId;
