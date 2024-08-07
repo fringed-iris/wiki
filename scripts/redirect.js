@@ -7,7 +7,7 @@ const redirect = (orgId, dir) => {
         to: dir
     }
 
-    if (sessionStorage.getItem("redirect") && ADR.from && ADR.to) {
+    if (!sessionStorage.getItem("redirect") && ADR.from && ADR.to) {
         sessionStorage.setItem("redirect", ADR.from)
 
         location.replace(`https://newflorrio.wiki.fc2.com/wiki/${ADR.to}?rfrom=${ADR.from}`);
