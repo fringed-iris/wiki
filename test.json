@@ -1,0 +1,13 @@
+{
+    "sample": {
+        "a": 1,
+        "b": null,
+        "c": "test"
+    },
+    "sample2": {
+        "d": true,
+        "e": {
+            "ea": "nest"
+        }
+    }
+}
