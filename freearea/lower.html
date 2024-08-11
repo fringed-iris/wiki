@@ -7,9 +7,7 @@
     }
 
     /*カスタムCSSに移動しました。Shaga*/
-</style>
 
-<style>
     /*スマホ用に使う*/
     /*全体設定*/
     #menu-mobile {
@@ -70,7 +68,19 @@
     /*このCSSでは無効にされる属性はjavascriptで書き換える*/
 </style>
 
-<script>
+<!--
+外部スクリプトロード用インポートマップ
+詳細は
+https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Modules#インポートマップを使用したモジュールのインポート
+-->
+<script type="importmap">
+{
+    "imports":{
+        "script/": "https://newflorrio.wiki.fc2.com/upload_dir/n/newflorrio/"
+    }
+}
+</script>
+<script type="module">
     /* -----------------------------------------------
     
     florr.io JPwiki 総合管理システム
@@ -135,7 +145,6 @@
         }
     })(window.florr.rarity);
     window.florr.rarity.length = Object.keys(window.florr.rarity.id).length / 2;
-
     window.florr.themeColor = (() => {
         const ROOT = getComputedStyle(document.documentElement);
 
@@ -146,681 +155,136 @@
             dark_gray: ROOT.getPropertyValue('--c-dark_gray')
         }
     })();
-
-    //ペタル、モブ関連のデータ
-    window.florr.database = {
+    window.florr.database = {//ペタル、モブ関連のデータ
         //モブの体力比
         mobHealthFactor: [1.0, 3.75, 13.5, 54, 405, 2430, 29160, 1312200],
         //既定アーマー
         defaultArmor: 0.8,
     }
-
-    Object.assign(window.florr, {//Object.assign()でオブジェクトの完全上書きを防ぐ
-        //許可されている外部スクリプト
-        allowedScripts: {
-            mobcode: {
-                src: "/upload_dir/n/newflorrio/2b377803b2cc777dab98098388307c4a.js",
-                funcName: "createPetalDataTable",
-                type: "object"
-            },
-            petalcode: {
-                src: "/upload_dir/n/newflorrio/7d8993f02f7e96811bdfb2c806dfc1bb.js",
-                funcName: "createPetalDataTable",
-                type: "object"
-            },
-            petalinfo: {
-                src: "/upload_dir/n/newflorrio/5eaa39b75dd5a649d94a1e2bea75125e.js",
-                funcName: "createPetalInfoTable",
-                type: "object"
-            },
-            mobinfo: {
-                src: "/upload_dir/n/newflorrio/12713bb69933630c1404f319b40719ed.js",
-                funcName: "createMobInfoTable",
-                type: "object"
-            },
-            redirect: {
-                src: "/upload_dir/n/newflorrio/cea7dc1b3812d3ca4bddfdea7df438c5.js",
-                funcName: "redirect",
-                type: "text"
+    window.florr.allowedScripts = {//許可されている外部スクリプト
+        mobcode: {
+            src: "/upload_dir/n/newflorrio/2b377803b2cc777dab98098388307c4a.js",
+            funcName: "createPetalDataTable",
+            load: {
+                from: "md",
+                arg: "object"
             }
         },
-
-
-        //loadsvg
-        loadsvg() {
-            orders = document.getElementsByClassName("getimg");
-            if (orders.length == 0) return;
-            for (let j = 0; j < orders.length; j++) {
-                let string = orders[j].textContent;
-                let number = 0;
-                let link;
-                for (let i = 0; i < string.length; i++) {
-                    if (string.substr(i, 1) == ":") {
-                        link = "https://" + string.substr(i + 1);
-                        break;
-                    }
-                    number *= 10;
-                    number += Number(string.substr(i, 1));
-                }
-                let image = document.createElement("img");
-                image.src = link;
-                image.width = number;
-                orders[j].textContent = "";
-                orders[j].appendChild(image);
+        petalcode: {
+            src: "/upload_dir/n/newflorrio/7d8993f02f7e96811bdfb2c806dfc1bb.js",
+            funcName: "createPetalDataTable",
+            load: {
+                from: "md",
+                arg: "object"
             }
         },
-
-        //文字装飾（テスト用、現在未使用）
-        addColorB() {
-            order = document.getElementById("black");
-            if (!order) return;
-            order.firstChild.style.color = "black";
-        },
-
-        //usercode（廃止検討）
-        userCode() {
-            orders = document.getElementsByClassName("usercode");
-            if (orders.length == 0) return;
-            for (let i = 0; i < orders.length; i++) {
-                let code = orders[i].textContent;
-                orders[i].innerHTML = code;
-
-                console.log(`${i} userCodeが実行されました：`, code);
+        petalinfo: {
+            src: "/upload_dir/n/newflorrio/5eaa39b75dd5a649d94a1e2bea75125e.js",
+            funcName: "createPetalInfoTable",
+            load: {
+                from: "md",
+                arg: "object"
             }
         },
-
-        //userscript（廃止検討）
-        userScript() {
-            orders = document.getElementsByClassName("userscript");
-            if (orders.length == 0) return;
-            for (let i = 0; i < orders.length; i++) {
-                let code = orders[i].textContent;
-                let script = document.createElement("script");
-                script.innerText = code;
-                script.textContent = code;
-                orders[i].textContent = "";
-                document.body.appendChild(script);
-
-                console.log(`${i} userScriptが実行されました：`, code);
+        mobinfo: {
+            src: "/upload_dir/n/newflorrio/12713bb69933630c1404f319b40719ed.js",
+            funcName: "createMobInfoTable",
+            load: {
+                from: "md",
+                arg: "object"
             }
         },
-
-        //スマホ対応
-        arrangeForMobile() {
-            /*
-            ・スマホ判別
-            ・全体の表示サイズ調整
-            ・メニュー調整
-            ・それぞれのタグについて処理
-                ・table,td,th,h2,button,inputのフォントサイズマシマシ
-                ・table調整
-            ・コメント欄のサイズ調整
-            ・region修正 (2024/7/4)
-            */
-            {//メニュー表示ボタン（スマホのif文の中に入れないこと。CSSで条件指定済み。）
-                const wrap = document.getElementById("wrap");
-
-                const menuButton = document.createElement("div");
-                menuButton.id = "menubutton";
-                menuButton.textContent = "MENU";
-                menuButton.setAttribute("data-cond", "open");
-                menuButton.onclick = () => {
-                    const menuButton = document.getElementById("menubutton")
-                    const menu = document.getElementById("menu");
-
-                    switch (menuButton.getAttribute("data-cond")) {
-                        case "open":
-                            menuButton.setAttribute("data-cond", "close");
-                            menu.setAttribute("data-cond", "open");
-                            break;
-                        case "close":
-                            menuButton.setAttribute("data-cond", "open");
-                            menu.setAttribute("data-cond", "close");
-                            break;
-
-                        default:
-                            menuButton.setAttribute("data-cond", "open");
-                            menu.setAttribute("data-cond", "close");
-                            break;
-                    }
-                };
-                window.onresize = () => {
-                    const menu = document.getElementById("menu");
-
-                    if (window.innerWidth > 1250) {
-                        menuButton.setAttribute("data-cond", "open");
-                        menu.setAttribute("data-cond", "")
-                    };
-                }
-                const img = document.createElement("img");//閉じるボタン
-                img.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCI+PHBhdGggaWQ9ImEiIGQ9Im0xLjE4IDEuMTggNy42NCA3LjY0IiBzdHlsZT0ic3Ryb2tlOiNmZmY7c3Ryb2tlLXdpZHRoOjIuMzY7c3Ryb2tlLWxpbmVjYXA6cm91bmQiLz48dXNlIGhyZWY9IiNhIiB0cmFuc2Zvcm09InJvdGF0ZSg5MCA1IDUpIi8+PC9zdmc+";
-
-                menuButton.appendChild(img);
-                wrap.appendChild(menuButton);
-            }
-            if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {//スマホなら
-                (() => { //全体の表示サイズ調整
-                    const adjText = '<div style="color:transparent;">おっと、この秘密のメッセージを君は見つけたようだね！とは言っても、これはスマホ版表示の調整のために生成されているものだから、見つけても特にいいことはないけれど。</div>';
-                    let userbodyElement = document.getElementsByClassName("user_body")[0];
-                    if (userbodyElement) userbodyElement.innerHTML += adjText;
-                })();
-
-                /*CSSメディアクエリにて対応
-                const menuElement = document.getElementById("menu");
-                menuElement.id = "menu-mobile"; //CSSを置き換え、メニューを下に降ろす
-                document.getElementById("main").style.marginLeft = "0"; //画面幅に合わせる
-                */
-
-
-                function pushTagToArray(tag) { //タグを集めて配列に入れる
-                    let list = document.getElementsByTagName(tag);
-                    let array = [];
-                    for (let i = 0; i < list.length; i++) { array.push(list[i]); }
-                    return array;
-                }
-                const tableList = pushTagToArray("table");
-                const tdList = pushTagToArray("td");
-                const thList = pushTagToArray("th");
-
-                /*フォントサイズはちょっと考え中です。fc2の仕組みが不明です。Shaga*/
-
-                tableList.forEach(e => {
-                    e.style.width = "auto";
-                    e.parentNode.innerHTML = '<div style="display: block; overflow-x:scroll;">' + e.parentNode.innerHTML + '</div>'
-                }); //スクロール可能なdivで包む
-                [tdList, thList].forEach(list => { //テーブルの幅を拡大
-                    list.forEach(e => {
-                        const value = parseInt(e.style.width);
-                        const unit = e.style.width.substr((value + "").length);
-                        if (unit.match(/.*px.*/)) e.style.width = value * 2 + unit;
-                    })
-                })
-
-                //コメント欄の表示ブレを修正（返信されたコメントはスマホだと表示が小さくなる。なぜかspanに包むと元に戻る）
-                function adjustCommentSize(com) {
-                    for (let li of com.children) { //urの中のliそれぞれについて
-                        let defaultText = li.innerHTML;
-                        if (defaultText.match(/.*ul.*/)) { //ulタグが含まれている=>表示がおかしくなっているなら
-                            li.innerHTML = "<span>" + defaultText + "</span>"; //spanで囲む
-                            for (let com2 of li.firstChild.children) {
-                                if (com2.tagName == "UL") {
-                                    adjustCommentSize(com2); //内部のulもそれぞれ調整
-                                }
-                            }
-                        }
-                    }
-                }
-
-                let comments = document.getElementsByClassName("user_comment_list"); //コメント欄を取得
-                for (let com of comments) {
-                    adjustCommentSize(com); //それぞれのコメント欄のulタグについて調整
-                }
-
-                {
-                    let regionButtonArr = [];
-                    let rb1 = document.getElementsByClassName("area_open");
-                    let rb2 = document.getElementsByClassName("area_close");
-                    for (let i = 0; i < rb1.length; i++) {
-                        regionButtonArr.push(rb1[i]);
-                    }
-                    for (let i = 0; i < rb2.length; i++) {
-                        regionButtonArr.push(rb2[i]);
-                    }
-                    for (let i = 0; i < regionButtonArr.length; i++) {
-                        let regionButton = regionButtonArr[i];
-                        let regionDiv = regionButton.nextElementSibling;
-                        regionButton.addEventListener("click", () => {
-                            if (regionDiv.style.display == "none") {
-                                regionDiv.style.display = "block";
-                                regionButton.className = "area_open";
-                            }
-                            else {
-                                regionDiv.style.display = "none";
-                                regionButton.className = "area_close";
-                            }
-                        })
-                    }
-                }
-            }
-        },
-
-        //外部スクリプト読み込み
-        loadScripts() {
-            /**
-             * 関数が含まれる場合削除
-             * @param {String} arg 
-             * @returns {any}
-             */
-            const safetyProcessing = arg => {
-                const OBJ = (new Function("return " + arg))();  //evalとほぼ同義だが、関数内の変数が外に出ない。スコープ汚染対策。
-                if (typeof OBJ !== "object") {
-                    return undefined;
-                } else {
-                    Object.keys(OBJ).forEach(property => {
-                        if (typeof property === "function") OBJ[property] = undefined;
-                    });
-                    return JSON.stringify(OBJ);
-                }
-            }
-            /**
-             * urlにfetchしてテキストとして返す
-             * @param {String} url 
-             * @returns {String}
-             */
-            const fetchTo = url => {
-                return new Promise(resolve => {
-                    fetch(url)
-                        .then(res => res.text())
-                        .then(text => resolve(text))
-
-                        .catch(() => resolve(""));
-                });
-            }
-
-            /**
-             * メイン処理
-             * @param {String} scriptName 
-             */
-            const load = async scriptName => {
-                const OBJ = this.allowedScripts[scriptName];
-                const USER_CLASSES = document.querySelectorAll(`.user_body span.${scriptName}`);
-
-                for (let i = 0; i < USER_CLASSES.length; i++) {
-                    const ELM = USER_CLASSES[i];
-                    ELM.id = scriptName + i;
-                    ELM.style.display = "none";
-
-                    let arg;
-                    switch (OBJ.type) {
-                        case "text":
-                            arg = `"${ELM.id}","${ELM.textContent}"`;
-
-                            break;
-                        case "object":
-                            arg = `"${ELM.id}",` + safetyProcessing(`{${ELM.textContent}}`);
-                            break;
-                        case "none":
-                            arg = "";
-                            break;
-
-                        default:
-                            arg = undefined;
-                            break;
-                    }
-
-                    if (arg !== undefined) {
-                        let script = await new Promise(resolve => {
-                            resolve(fetchTo(OBJ.src));
-                        });
-                        script += `\n\r${OBJ.funcName}(${arg});`;
-
-                        const NEW_FUNCTION = new Function(script);
-                        NEW_FUNCTION();
-                        console.log(`関数${OBJ.funcName}が次の引数を取り実行されました：\n`, arg);
-                    }
-                }
-            }
-
-            Object.keys(this.allowedScripts).forEach(scriptName => load(scriptName));
-        },
-
-        //コメントの整形と操作
-        prettierComment() {
-            /**
-             * li要素から直下のテキストのみ抽出し、元のテキストは削除
-             * @param {HTMLLIElement} li
-             * @returns {String}
-             */
-            const getChildText = li => {
-                for (let i = 0; i < li.childNodes.length; i++) {
-                    const elm = li.childNodes[i];
-                    if (
-                        elm.nodeName === '#text'
-                        && elm.textContent.match(/^\s+$/) === null
-                    ) {
-                        const text = elm.textContent;
-                        elm.textContent = '';
-
-                        return text;
-                    }
-                }
-
-                return '';
-            };
-            /**
-             * 投稿情報を取得
-             * 投稿形式：コメント␣---␣投稿者名␣(2000/01/01␣00:00:00)\n␣␣...
-             * @param {String} post
-             * @returns {RegExpMatchArray} 引数が適切なコメント形式だった場合
-             * @returns {Object} 上記以外
-             */
-            const getPostData = post => post.match(
-                /^\s*(?<comment>.+) --- (?<poster>.*) \((?<year>\d{4})\/(?<month>\d{2})\/(?<day>\d{2}) (?<h>\d{2}):(?<m>\d{2}):(?<s>\d{2})\)\s*$/
-            )?.groups ?? {};
-            /**
-             * span要素をクラスを付与して生成
-             * @param {Array} spanClasses
-             * @returns {HTMLSpanElement}
-             */
-            const createSpanWithClass = (...spanClasses) => {
-                const SPAN = document.createElement('span');
-                if (spanClasses.length > 0) SPAN.classList.add(...spanClasses);
-                return SPAN;
-            };
-
-            const postData = "postData"//Symbol("コメントのHTML要素に設定する投稿データ");
-
-            {//再構成＆デザイン適用
-                const COMMENTS = document.querySelectorAll('ul.user_comment_list li');
-                [...COMMENTS].forEach(li => {
-                    const DATA = getPostData(getChildText(li));
-
-                    const POST = createSpanWithClass('comment_parent');
-                    {//投稿情報の要素
-                        const INFO = createSpanWithClass('comment_info');
-                        (parentSpan => {//  親Span要素内に投稿情報の子Span要素を挿入
-                            {//投稿者名
-                                const SPAN = createSpanWithClass('comment_poster');
-                                SPAN.textContent = DATA.poster === '' ? '名無し' : DATA.poster;
-                                if (DATA.poster === '') SPAN.style.color = "var(--c-text_black)";
-                                parentSpan.appendChild(SPAN);
-                            }
-                            {//投稿日時
-                                const SPAN = createSpanWithClass('comment_date');
-                                SPAN.textContent = `${DATA.year}年${DATA.month}月${DATA.day}日 ${DATA.h}:${DATA.m}:${DATA.s}`;
-                                parentSpan.appendChild(SPAN);
-                            }
-                        })(INFO);
-                        POST.appendChild(INFO);
-                    }
-                    {//コメント本文
-                        const TEXT = createSpanWithClass();
-                        TEXT.textContent = DATA.comment;
-                        POST.appendChild(TEXT);
-                    }
-
-                    POST[postData] = DATA;//投稿に関するデータを登録
-
-                    (sibling => {
-                        if (sibling) {
-                            sibling.before(POST);
-                        } else {
-                            li.appendChild(POST);
-                        }
-                    })(li.querySelector("ul"));
-                });
-            }
-            {//ソート
-                /**
-                 * コメントを配列形式にして返す。再帰関数。
-                 * 形式は
-                 * [
-                 *  [<element>],
-                 *  [
-                 *   <element>,
-                 *   [
-                 *    <element>...
-                 *   ]
-                 *  ],
-                 *  ...
-                 * ]
-                 * のような<返信のネスト数 + 1>次配列（fc2のコメントシステムにより最大3+1）
-                 */
-                const getAllComments = (
-                    li,
-                    d = {
-                        data: [],
-                        nest: []
-                    }
-                ) => {
-                    for (let i = 0; i < li.length; i++) {
-                        const E = li[i];
-
-                        let E_span = [E.querySelector("span")];
-
-                        const E_UL = E.querySelector("ul");
-                        if (E_UL) {//返信がネストしてるなら
-                            let n = [i];
-
-                            const D = getAllComments(//再帰で掘る
-                                E_UL.querySelectorAll("li"),
-                                {
-                                    data: E_span,
-                                    nest: n
-                                }
-                            );
-
-                            E_span = D.data;
-                            n = D.nest;
-
-                            d.nest.push(n)
-                        }
-
-                        d.data.push(E_span);
-                    }
-
-                    return d;
-                }
-                const sortComments = (arr = [], sortFn = new Function()) => {
-                    arr.forEach(e => {
-                        if (e.length > 1) {
-                            sortComments(e[1], sortFn);
-                        }
-                    });
-                    arr.sort(sortFn);
-                }
-
-                const COMMENTS = getAllComments(document.querySelectorAll('ul.user_comment_list li'));
-
-                sortComments(COMMENTS, (a, b) => {
-                    const _ = p => `${p[postData].year}${p[postData].month}${p[postData].day}${p[postData].h}${p[postData].m}${p[postData].s}`
-
-                    console.log(a, b);
-
-                    return _(a) > _(b)
-                        ? 1
-                        : -1;
-                });
-
-                console.log(COMMENTS);
-            }
-        },
-
-        //ページ編集画面のカラーパレット
-        pageEditingFunction() {
-            const newColor = (rabel, color) => { return { rabel, color } };
-
-            const colors = [
-                {
-                    rabel: "wikiテーマカラー",
-                    content: [
-                        newColor("wiki背景", window.florr.themeColor.theme),
-                        newColor("表の枠", window.florr.themeColor.subTheme_dark),
-                        newColor("表の背景", window.florr.themeColor.subTheme_light),
-                    ],
-                },
-
-                {
-                    rabel: "レアリティ",
-                    content: [
-                        newColor("Common", window.florr.rarity.color.background[window.florr.rarity.id[0]]),
-                        newColor("Unusual", window.florr.rarity.color.background[window.florr.rarity.id[1]]),
-                        newColor("Rare", window.florr.rarity.color.background[window.florr.rarity.id[2]]),
-                        newColor("Epic", window.florr.rarity.color.background[window.florr.rarity.id[3]]),
-                        newColor("Legendary", window.florr.rarity.color.background[window.florr.rarity.id[4]]),
-                        newColor("Mythic", window.florr.rarity.color.background[window.florr.rarity.id[5]]),
-                        newColor("Ultra", window.florr.rarity.color.background[window.florr.rarity.id[6]]),
-                        newColor("Super", window.florr.rarity.color.background[window.florr.rarity.id[7]]),
-                    ],
-                },
-
-                {
-                    rabel: "エリア",
-                    content: [
-                        newColor("Garden", "#1fa861"),
-                        newColor("Desert", "#ecdcb8"),
-                        newColor("Ocean", "#5785ba"),
-                        newColor("Jungle", "#009900"),
-                        newColor("Fire Ant Hell", "#990000"),
-                        newColor("Black Ant Hell", "#996644"),
-                        newColor("Termite Hell", "#CC9900"),
-                        newColor("Sewers", "#666633"),
-                        //newColor("PvP", "#4d5e56"),
-                        newColor("Hel", "#CC0000"),
-                        //newColor("Battle Royal", "#000000"),
-                    ],
-                },
-            ]
-
-            const createElement = {
-                ribbon(options = {}) {
-                    const DIV = document.createElement("div");
-                    DIV.id = options.id;
-
-                    const TITLE = document.createElement("span");
-                    TITLE.classList.add(options.className);
-                    TITLE.textContent = options.title;
-
-                    DIV.appendChild(TITLE);
-
-                    return DIV;
-                },
-                section(options = {}) {
-                    const DIV = document.createElement("div");
-                    const TITLE = document.createElement("span");
-                    TITLE.classList.add(options.className);
-                    TITLE.textContent = options.title;
-
-                    DIV.appendChild(TITLE);
-
-                    return DIV;
-                },
-                colorPalette(options = {}) {
-                    const DIV_TOP = document.createElement("div");
-                    DIV_TOP.classList.add(options.className);
-
-                    const DIV_COLOR = document.createElement("div");
-                    DIV_COLOR.style.backgroundColor = options.color;
-                    DIV_COLOR.addEventListener("click", options.handler);
-
-                    const DIV_RABEL = document.createElement("span");
-                    DIV_RABEL.textContent = options.rabel;
-
-                    DIV_TOP.appendChild(DIV_COLOR);
-                    DIV_TOP.appendChild(DIV_RABEL);
-
-                    return DIV_TOP;
-                },
-            }
-
-            const main = (options = {}) => {
-                const COLOR_PALETTE = createElement.ribbon({
-                    id: "colorPalette",
-                    className: "ribbon_title",
-                    title: "",
-                });
-
-                colors.forEach(category => {
-                    const COLOR_CONTENT = category.content;
-
-                    const SECTION = createElement.section({
-                        className: "colorPalette_title",
-                        title: category.rabel,
-                    });
-                    const INCLUDE_COLORS = document.createElement("div");
-                    INCLUDE_COLORS.classList.add("colorPalette_palette");
-
-                    COLOR_CONTENT.forEach(colorInfo => {
-                        const newColor = createElement.colorPalette({
-                            color: colorInfo.color,
-                            rabel: colorInfo.rabel,
-                            className: "colorPalette_color",
-                            handler() {
-                                const EDITING_FIELD = {
-                                    value: options.editingField.value,
-                                    start: options.editingField.selectionStart,
-                                    end: options.editingField.selectionEnd,
-                                }
-                                const TEXT = {
-                                    before: EDITING_FIELD.value.slice(
-                                        0,
-                                        EDITING_FIELD.start
-                                    ),
-                                    selecting: EDITING_FIELD.value.slice(
-                                        EDITING_FIELD.start,
-                                        EDITING_FIELD.end
-                                    ),
-                                    after: EDITING_FIELD.value.slice(
-                                        EDITING_FIELD.end,
-                                        EDITING_FIELD.value.length
-                                    ),
-                                }
-
-                                options.editingField.value = `${TEXT.before}&color(${colorInfo.color}){${TEXT.selecting}}${TEXT.after}`;
-                                options.editingField.selectionStart, options.editingField.selectionEnd = EDITING_FIELD.start;
-                            }
-                        });
-
-                        INCLUDE_COLORS.appendChild(newColor);
-                    });
-
-                    SECTION.appendChild(INCLUDE_COLORS);
-                    COLOR_PALETTE.appendChild(SECTION);
-                });
-
-                options.toolbar.after(COLOR_PALETTE);
-            }
-
-            if (
-                window.location.pathname.slice(1, 5) === "edit"
-                || new URL(window.location).searchParams.get("cmd") === "edit"
-            ) {
-                main({
-                    toolbar: document.getElementById("toolbar"),
-                    editingField: document.getElementById("html"),
-                });
-            }
-        },
-
-        //リダイレクトされたかどうか検知してポップアップを表示
-        redirect() {
-            const ADR = sessionStorage.getItem("redirect");
-
-            if (ADR) {
-                sessionStorage.setItem("redirect", "");
-
-                const WRAP = document.getElementById("wrap");
-
-                const ANM = {
-                    interval: 500,
-                    popup: 200,
-                    bg: 8000
-                }
-                const DIV = document.createElement("div");
-                DIV.id = "redirect";
-                DIV.style.display = "block";
-                DIV.style.transition = `
-        transform ${ANM.popup / 1000}s ease-out,
-        opacity ${ANM.popup / 1000}s ease-out,
-        background-position ${ANM.bg / 1000}s linear`;
-                {
-                    const P = document.createElement("p");
-                    P.textContent = `「${ADR}」から転送されました。`;
-                    const A = document.createElement("a");
-                    A.textContent = "リダイレクトページの編集はこちら";
-                    A.href = `https://newflorrio.wiki.fc2.com/edit/${ADR}/`;
-
-                    DIV.appendChild(P);
-                    DIV.appendChild(A);
-                }
-                WRAP.appendChild(DIV);
-
-                setTimeout(() => DIV.setAttribute("name", "open"), ANM.interval);
-                setTimeout(() => DIV.setAttribute("name", "close"), ANM.interval + ANM.popup + ANM.bg);
-                setTimeout(() => DIV.style.display = "none", ANM.interval + ANM.popup * 2 + ANM.bg);
+        redirect: {
+            src: "/upload_dir/n/newflorrio/cea7dc1b3812d3ca4bddfdea7df438c5.js",
+            funcName: "redirect",
+            load: {
+                from: "md",
+                arg: "string"
             }
         }
-    });
+    }
+
+
+    //外部スクリプト読み込み
+    const loadScript = () => {
+        /**
+         * 関数が含まれる場合削除
+         * @param {String} arg 
+         * @returns {any}
+         */
+        const safetyProc = arg => {
+            const OBJ = (new Function("return " + arg))();  //evalとほぼ同義だが、関数内の変数が外に出ない。スコープ汚染対策。
+            if (typeof OBJ !== "object") {
+                return undefined;
+            } else {
+                Object.keys(OBJ).forEach(property => {
+                    if (typeof property === "function") OBJ[property] = undefined;
+                });
+                return JSON.stringify(OBJ);
+            }
+        }
+        /**
+         * urlにfetchしてテキストとして返す
+         * @param {String} url 
+         * @returns {String}
+         */
+        const fetchTo = url => {
+            return new Promise(resolve => {
+                fetch(url)
+                    .then(res => res.text())
+                    .then(text => resolve(text))
+
+                    .catch(() => resolve(""));
+            });
+        }
+
+        /**
+         * メイン処理
+         * @param {String} scriptData 
+         */
+        const load = async scriptData => {
+            const USER_CLASSES = document.querySelectorAll(`.user_body span.${scriptData}`);
+
+            for (let i = 0; i < USER_CLASSES.length; i++) {
+                const ELM = USER_CLASSES[i];
+                ELM.id = scriptData + i;
+                ELM.style.display = "none";
+
+                let arg;
+                switch (scriptData.argType) {
+                    case "text":
+                        arg = `"${ELM.id}","${ELM.textContent}"`;
+
+                        break;
+                    case "object":
+                        arg = `"${ELM.id}",` + safetyProc(`{${ELM.textContent}}`);
+                        break;
+                    case "none":
+                        arg = "";
+                        break;
+
+                    default:
+                        arg = undefined;
+                        break;
+                }
+
+                if (arg !== undefined) {
+                    let script = await new Promise(resolve => {
+                        resolve(fetchTo(scriptData.src));
+                    });
+                    script += `\n\r${scriptData.funcName}(${arg});`;
+
+                    const NEW_FUNCTION = new Function(script);
+                    NEW_FUNCTION();
+                    console.log(`関数${scriptData.funcName}が次の引数を取り実行されました：\n`, arg);
+                }
+            }
+        }
+
+        Object.keys(window.florr.allowedScripts).forEach(e => load(window.florr.allowedScripts[e]));
+    }
+
+
 
     //DOMツリー構築完了時に関数を実行
     document.addEventListener("DOMContentLoaded", async e => {
