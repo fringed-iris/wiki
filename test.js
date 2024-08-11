@@ -1,0 +1,1 @@
+export function test(msg) { console.log(`message from test.js: ${msg}`) }
