@@ -67,20 +67,7 @@
 
     /*このCSSでは無効にされる属性はjavascriptで書き換える*/
 </style>
-
-<!--
-外部スクリプトロード用インポートマップ
-詳細は
-https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Modules#インポートマップを使用したモジュールのインポート
--->
-<script type="importmap">
-{
-    "imports":{
-        "script/": "https://newflorrio.wiki.fc2.com/upload_dir/n/newflorrio/"
-    }
-}
-</script>
-<script type="module">
+<script>
     /* -----------------------------------------------
     
     florr.io JPwiki 総合管理システム
@@ -90,10 +77,12 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Modules#インポー�
     ----------------------------------------------- */
 
 
+    const SETTINGS = await(
+        await fetch("https://fringed-iris.github.io/wiki/settings.json")
+    ).json();
 
     //window.florrが全てのwikiスクリプトを内包
     window.florr = {}  //初期化
-
     //レアリティ関連のデータ
     window.florr.rarity = {};
     ($ => {
@@ -204,8 +193,21 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Modules#インポー�
         }
     }
 
-
     //外部スクリプト読み込み
+    const load = async (keys, arg) => {
+        for (let i = 0; i < SCRIPTS.length; i++) {
+            const OBJ = await import();
+            OBJ.main(arg);
+        }
+    }
+
+    const SCRIPTS = Object.keys(SETTINGS["general"]);
+    SCRIPTS.forEach(n => {
+        const SYNTAX = document.querySelectorAll(`.user_body span.${n}`);
+        SYNTAX.forEach(e => load(n, e.textContent));
+    });
+
+
     const loadScript = () => {
         /**
          * 関数が含まれる場合削除
@@ -283,28 +285,6 @@ https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide/Modules#インポー�
 
         Object.keys(window.florr.allowedScripts).forEach(e => load(window.florr.allowedScripts[e]));
     }
-
-
-
-    //DOMツリー構築完了時に関数を実行
-    document.addEventListener("DOMContentLoaded", async e => {
-        await window.florr.userCode();
-        await window.florr.userScript();
-        window.florr.pageEditingFunction();
-        window.florr.loadScripts();  //非同期
-        window.florr.prettierComment();
-        window.florr.arrangeForMobile(); //他の全てのアレンジが終わった後に実行すること！
-        window.florr.redirect();
-
-        console.log(`DOMContentLoadedが実行されました：${e.eventPhase}`);//イベントリスナーの現在の状態確認用
-    });
-    //ページ読込み完了時に関数を実行
-    window.addEventListener("load", e => {
-        window.florr.loadsvg();
-        window.florr.addColorB();
-
-        console.log(`loadが実行されました：${e.eventPhase}`);//イベントリスナーの現在の状態確認用
-    });
 
     //???
     (() => {

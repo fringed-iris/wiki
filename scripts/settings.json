@@ -1,0 +1,18 @@
+{
+    "general": {
+        "arrangeForMobile": {},
+        "loadSVG": {},
+        "prettyComment": {},
+        "redirectDetector": {},
+        "usercode": {},
+        "userscript": {},
+        "wikiEditorAddon": {}
+    },
+    "unique syntax": {
+        "mobcode": {},
+        "mobinfo": {},
+        "petalcode": {},
+        "petalinfo": {},
+        "redirect": {}
+    }
+}
