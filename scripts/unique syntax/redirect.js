@@ -1,6 +1,6 @@
 "use strict";
 
-const redirect = (orgId, dir) => {
+export const main = (orgId, dir) => {
     const ORG = document.getElementById(orgId);
     const ADR = {
         from: location.pathname.split("/")[2] ?? "",//https://newflorrio.wiki.fc2.com[0]/[1]/[2]/

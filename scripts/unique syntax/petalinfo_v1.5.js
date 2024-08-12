@@ -5,7 +5,7 @@
  * @param {String} origin 挿入先の兄弟要素のID 
  * @param {Object} data 生成データ
  */
-const createPetalInfoTable = (origin, data) => {
+export const main = (origin, data) => {
     /**
      * 全体のスタイル
      */

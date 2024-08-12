@@ -77,10 +77,6 @@
     ----------------------------------------------- */
 
 
-    const SETTINGS = await(
-        await fetch("https://fringed-iris.github.io/wiki/settings.json")
-    ).json();
-
     //window.florrが全てのwikiスクリプトを内包
     window.florr = {}  //初期化
     //レアリティ関連のデータ
@@ -150,141 +146,44 @@
         //既定アーマー
         defaultArmor: 0.8,
     }
-    window.florr.allowedScripts = {//許可されている外部スクリプト
-        mobcode: {
-            src: "/upload_dir/n/newflorrio/2b377803b2cc777dab98098388307c4a.js",
-            funcName: "createPetalDataTable",
-            load: {
-                from: "md",
-                arg: "object"
-            }
-        },
-        petalcode: {
-            src: "/upload_dir/n/newflorrio/7d8993f02f7e96811bdfb2c806dfc1bb.js",
-            funcName: "createPetalDataTable",
-            load: {
-                from: "md",
-                arg: "object"
-            }
-        },
-        petalinfo: {
-            src: "/upload_dir/n/newflorrio/5eaa39b75dd5a649d94a1e2bea75125e.js",
-            funcName: "createPetalInfoTable",
-            load: {
-                from: "md",
-                arg: "object"
-            }
-        },
-        mobinfo: {
-            src: "/upload_dir/n/newflorrio/12713bb69933630c1404f319b40719ed.js",
-            funcName: "createMobInfoTable",
-            load: {
-                from: "md",
-                arg: "object"
-            }
-        },
-        redirect: {
-            src: "/upload_dir/n/newflorrio/cea7dc1b3812d3ca4bddfdea7df438c5.js",
-            funcName: "redirect",
-            load: {
-                from: "md",
-                arg: "string"
-            }
-        }
+
+
+    const run = async (path = "", arg = {}) => {
+        const OBJ = await import(path);
+        OBJ.main(arg);
     }
-
-    //外部スクリプト読み込み
-    const load = async (keys, arg) => {
-        for (let i = 0; i < SCRIPTS.length; i++) {
-            const OBJ = await import();
-            OBJ.main(arg);
-        }
-    }
-
-    const SCRIPTS = Object.keys(SETTINGS["general"]);
-    SCRIPTS.forEach(n => {
-        const SYNTAX = document.querySelectorAll(`.user_body span.${n}`);
-        SYNTAX.forEach(e => load(n, e.textContent));
-    });
-
-
-    const loadScript = () => {
-        /**
-         * 関数が含まれる場合削除
-         * @param {String} arg 
-         * @returns {any}
-         */
+    const load = (json, p) => {
         const safetyProc = arg => {
-            const OBJ = (new Function("return " + arg))();  //evalとほぼ同義だが、関数内の変数が外に出ない。スコープ汚染対策。
-            if (typeof OBJ !== "object") {
-                return undefined;
-            } else {
-                Object.keys(OBJ).forEach(property => {
-                    if (typeof property === "function") OBJ[property] = undefined;
+            const OBJ = (new Function("return " + arg))();
+            if (typeof OBJ === "object") {
+                Object.keys(OBJ).forEach(p => {
+                    if (typeof p === "function") delete OBJ[p];
                 });
+
                 return JSON.stringify(OBJ);
             }
-        }
-        /**
-         * urlにfetchしてテキストとして返す
-         * @param {String} url 
-         * @returns {String}
-         */
-        const fetchTo = url => {
-            return new Promise(resolve => {
-                fetch(url)
-                    .then(res => res.text())
-                    .then(text => resolve(text))
 
-                    .catch(() => resolve(""));
-            });
+            return undefined;
         }
 
-        /**
-         * メイン処理
-         * @param {String} scriptData 
-         */
-        const load = async scriptData => {
-            const USER_CLASSES = document.querySelectorAll(`.user_body span.${scriptData}`);
+        const SCRIPTS = Object.keys(json[p]);
 
-            for (let i = 0; i < USER_CLASSES.length; i++) {
-                const ELM = USER_CLASSES[i];
-                ELM.id = scriptData + i;
-                ELM.style.display = "none";
-
-                let arg;
-                switch (scriptData.argType) {
-                    case "text":
-                        arg = `"${ELM.id}","${ELM.textContent}"`;
-
-                        break;
-                    case "object":
-                        arg = `"${ELM.id}",` + safetyProc(`{${ELM.textContent}}`);
-                        break;
-                    case "none":
-                        arg = "";
-                        break;
-
-                    default:
-                        arg = undefined;
-                        break;
-                }
-
-                if (arg !== undefined) {
-                    let script = await new Promise(resolve => {
-                        resolve(fetchTo(scriptData.src));
-                    });
-                    script += `\n\r${scriptData.funcName}(${arg});`;
-
-                    const NEW_FUNCTION = new Function(script);
-                    NEW_FUNCTION();
-                    console.log(`関数${scriptData.funcName}が次の引数を取り実行されました：\n`, arg);
-                }
-            }
-        }
-
-        Object.keys(window.florr.allowedScripts).forEach(e => load(window.florr.allowedScripts[e]));
+        SCRIPTS.forEach(n => {
+            const SYNTAX = document.querySelectorAll(`.user_body span.${n}`);
+            SYNTAX.forEach(e => run(
+                `https://fringed-iris.github.io/wiki/scripts/${type}/${funcName}.js`,
+                safetyProc(e.textContent)
+            ));
+        });
     }
+
+    const CONFIG = await(
+        await fetch("https://fringed-iris.github.io/wiki/config.json")
+    ).json();
+
+    load(CONFIG, "general");
+    load(CONFIG, "unique syntax");
+
 
     //???
     (() => {
