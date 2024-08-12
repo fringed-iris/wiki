@@ -153,36 +153,50 @@
         OBJ.main(arg);
     }
     const load = (json, p) => {
-        const safetyProc = arg => {
-            const OBJ = (new Function("return " + arg))();
-            if (typeof OBJ === "object") {
-                Object.keys(OBJ).forEach(p => {
-                    if (typeof p === "function") delete OBJ[p];
-                });
-
-                return JSON.stringify(OBJ);
+        const escape = (str = "") => {
+            let escapedString = "";
+            for (let i = 0; i < str.length; i++) {
+                const DEC_CHAR_CODE = str[i].charCodeAt(0);
+                escapedString += DEC_CHAR_CODE > 127
+                    ? str[i]
+                    : `\\u{${DEC_CHAR_CODE.toString(16)}}`;
             }
 
-            return undefined;
+            return escapedString;
+        }
+        const safetyProc = (arg = {}) => {
+            let res = arg;
+            Object.keys(res).forEach(p => {
+                if (typeof p === "function") delete res[p];
+            });
+
+            return res;
+        }
+        const loadByFncName = (funcName = "") => {
+            const SYNTAX = document.querySelectorAll(`.user_body span.${funcName}`);
+            SYNTAX.forEach(async e => {
+                const ARG = await e.textContent.json() || {};
+
+                run(
+                    `https://fringed-iris.github.io/wiki/scripts/${type}/${funcName}.js`,
+                    safetyProc(ARG)
+                )
+            });
         }
 
         const SCRIPTS = Object.keys(json[p]);
-
-        SCRIPTS.forEach(n => {
-            const SYNTAX = document.querySelectorAll(`.user_body span.${n}`);
-            SYNTAX.forEach(e => run(
-                `https://fringed-iris.github.io/wiki/scripts/${type}/${funcName}.js`,
-                safetyProc(e.textContent)
-            ));
-        });
+        SCRIPTS.forEach(n => loadByFncName(n, json[p][n]));
     }
 
     const CONFIG = await(
         await fetch("https://fringed-iris.github.io/wiki/config.json")
     ).json();
 
-    load(CONFIG, "general");
-    load(CONFIG, "unique syntax");
+    document.addEventListener("load", () => {
+        load(CONFIG, "general");
+        load(CONFIG, "unique syntax");
+        load(CONFIG, "external");
+    });
 
 
     //???

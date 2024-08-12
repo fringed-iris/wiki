@@ -23,11 +23,21 @@
         }
     },
     "unique syntax": {
-        "mobcode": {},
-        "mobinfo": {},
-        "petalcode": {},
-        "petalinfo": {},
-        "redirect": {}
+        "mobcode": {
+            "arg": "object"
+        },
+        "mobinfo": {
+            "arg": "object"
+        },
+        "petalcode": {
+            "arg": "object"
+        },
+        "petalinfo": {
+            "arg": "object"
+        },
+        "redirect": {
+            "arg": "string"
+        }
     },
     "external": {}
 }
