@@ -10,7 +10,7 @@ ver.2.2
 /**
  * 
  * @param {String} $.originId 挿入先の兄弟要素のID 
- * @param {Object} $.data 生成データ
+ * @param {Object} $.options 生成データ
  */
 export const main = ($) => {
     /**
@@ -86,7 +86,7 @@ export const main = ($) => {
         const IMG = createElmInstantly(
             "img",
             {
-                src: `/image/${$.data.leastRarity}_${$.data.name.replace(/\s/g, "")}_Mob`
+                src: `/image/${$.options.leastRarity}_${$.options.name.replace(/\s/g, "")}_Mob`
             },
             STYLE.captionImg
         );
@@ -206,21 +206,21 @@ export const main = ($) => {
         STYLE.tbody
     );
     const ANY = {
-        alias: typeof $.data?.alias == "string",
-        differenceImg: typeof $.data?.differenceImg === "object",
+        alias: typeof $.options?.alias == "string",
+        differenceImg: typeof $.options?.differenceImg === "object",
     }
     const MAX_COL = 4;
 
     if (ANY.differenceImg) {//differenceImgの処理        
         let sortedId = [];
-        for (let i = 0; i < $.data.differenceImg.length; i++) {
-            const E = $.data.differenceImg[i];
-            if (window.florr.rarity.id[E] > window.florr.rarity.id[$.data.leastRarity]) sortedId.push([window.florr.rarity.id[E], E])
+        for (let i = 0; i < $.options.differenceImg.length; i++) {
+            const E = $.options.differenceImg[i];
+            if (window.florr.rarity.id[E] > window.florr.rarity.id[$.options.leastRarity]) sortedId.push([window.florr.rarity.id[E], E])
         }
         sortedId.sort();
 
-        $.data.differenceImg = [];
-        for (let i = 0; i < sortedId.length; i++) $.data.differenceImg.push(sortedId[i][1])
+        $.options.differenceImg = [];
+        for (let i = 0; i < sortedId.length; i++) $.options.differenceImg.push(sortedId[i][1])
     }
     {
         const TR = document.createElement("tr");
@@ -228,9 +228,9 @@ export const main = ($) => {
         {//見出し画像
             if (ANY.differenceImg) {
                 const TD = createCaptionImg({
-                    colSpan: $.data.differenceImg.length > MAX_COL
+                    colSpan: $.options.differenceImg.length > MAX_COL
                         ? MAX_COL
-                        : $.data.differenceImg.length
+                        : $.options.differenceImg.length
                 });
 
                 TR.appendChild(TD);
@@ -242,9 +242,9 @@ export const main = ($) => {
                 {
                     const CHILD_TD = createDifferenceImgRarity({
                         create: true,
-                        rarity: window.florr.rarity.name[$.data.leastRarity],
-                        dif: window.florr.rarity.length - window.florr.rarity.id[$.data.leastRarity],
-                        color: window.florr.rarity.color.background[$.data.leastRarity],
+                        rarity: window.florr.rarity.name[$.options.leastRarity],
+                        dif: window.florr.rarity.length - window.florr.rarity.id[$.options.leastRarity],
+                        color: window.florr.rarity.color.background[$.options.leastRarity],
                     });
                     CHILD_TD.style.display = "block";
 
@@ -258,10 +258,10 @@ export const main = ($) => {
             if (ANY.differenceImg) {
                 const TD = createComment({
                     rowSpan: 1 + (
-                        1 + Math.ceil($.data.differenceImg.length / MAX_COL) * 2 - 2
+                        1 + Math.ceil($.options.differenceImg.length / MAX_COL) * 2 - 2
                         + (ANY.alias ? -1 : 1)),
 
-                    textContent: $.data.comment,
+                    textContent: $.options.comment,
                 });
 
                 TR.appendChild(TD);
@@ -272,7 +272,7 @@ export const main = ($) => {
 
                 {
                     const SPAN = document.createElement("span");
-                    SPAN.textContent = $.data.comment;
+                    SPAN.textContent = $.options.comment;
 
                     {//改行
                         TD.appendChild(createBr());
@@ -292,7 +292,7 @@ export const main = ($) => {
             } else {
                 const TD = createComment({
                     rowSpan: 2,
-                    textContent: $.data.comment,
+                    textContent: $.options.comment,
                 });
 
                 TR.appendChild(TD);
@@ -303,13 +303,13 @@ export const main = ($) => {
     }
     if (ANY.differenceImg) {
         let column = 0;
-        for (column; column < Math.ceil($.data.differenceImg.length / MAX_COL); column++) {
+        for (column; column < Math.ceil($.options.differenceImg.length / MAX_COL); column++) {
             const FROM = column * MAX_COL;
-            const TO = $.data.differenceImg.length > MAX_COL
+            const TO = $.options.differenceImg.length > MAX_COL
                 ? (column + 1) * MAX_COL
-                : $.data.differenceImg.length;
-            const DATA_END = TO > $.data.differenceImg.length
-                ? $.data.differenceImg.length
+                : $.options.differenceImg.length;
+            const DATA_END = TO > $.options.differenceImg.length
+                ? $.options.differenceImg.length
                 : TO;
 
             {
@@ -318,11 +318,11 @@ export const main = ($) => {
                 for (let i = FROM; i < TO; i++) {//差分画像
                     const TD = createDifferenceImg(
                         {
-                            create: i < $.data.differenceImg.length,
-                            src: `/image/${$.data.differenceImg[i]}_${$.data.name.replace(/\s/g, "")}_Mob`
+                            create: i < $.options.differenceImg.length,
+                            src: `/image/${$.options.differenceImg[i]}_${$.options.name.replace(/\s/g, "")}_Mob`
                         },
                         {
-                            rowSpan: ANY.alias && DATA_END === $.data.differenceImg.length
+                            rowSpan: ANY.alias && DATA_END === $.options.differenceImg.length
                                 ? 2
                                 : 1,
                         }
@@ -330,7 +330,7 @@ export const main = ($) => {
 
                     TR.appendChild(TD);
                 }
-                if (ANY.alias && DATA_END === $.data.differenceImg.length) {//通称（見出し）
+                if (ANY.alias && DATA_END === $.options.differenceImg.length) {//通称（見出し）
                     const TD = createAliasSubtitle();
 
                     TR.appendChild(TD);
@@ -338,7 +338,7 @@ export const main = ($) => {
 
                 TBODY.appendChild(TR);
             }
-            if (ANY.alias && DATA_END === $.data.differenceImg.length) {//通称
+            if (ANY.alias && DATA_END === $.options.differenceImg.length) {//通称
                 const TR = document.createElement("tr");
 
                 {
@@ -346,7 +346,7 @@ export const main = ($) => {
                         "td",
                         {
                             rowSpan: 2,
-                            textContent: $.data.alias,
+                            textContent: $.options.alias,
                         },
                         {}
                     );
@@ -360,13 +360,13 @@ export const main = ($) => {
                 const TR = document.createElement("tr");
 
                 for (let i = FROM; i < TO; i++) {
-                    const DIF = window.florr.rarity.id[$.data.differenceImg[i + 1]] ?? (window.florr.rarity.length - 1) - window.florr.rarity.id[$.data.differenceImg[i]];
+                    const DIF = window.florr.rarity.id[$.options.differenceImg[i + 1]] ?? (window.florr.rarity.length - 1) - window.florr.rarity.id[$.options.differenceImg[i]];
                     const TD = createDifferenceImgRarity(
                         {
                             create: DATA_END > i,
-                            rarity: window.florr.rarity.name[$.data.differenceImg[i]],
+                            rarity: window.florr.rarity.name[$.options.differenceImg[i]],
                             dif: DIF,
-                            color: window.florr.rarity.color.background[$.data.differenceImg[i]]
+                            color: window.florr.rarity.color.background[$.options.differenceImg[i]]
                         }
                     );
 
@@ -394,7 +394,7 @@ export const main = ($) => {
 
                 {
                     const SPAN = document.createElement("span");
-                    SPAN.textContent = $.data.alias;
+                    SPAN.textContent = $.options.alias;
 
                     {//改行
                         TD.appendChild(createBr());
@@ -414,7 +414,7 @@ export const main = ($) => {
             TBODY.appendChild(TR);
         }
     }
-    if (!($.data.super === false)) {//Superメッセージ
+    if (!($.options.super === false)) {//Superメッセージ
         {//Superタイトル
             const TH = createElmInstantly(
                 "th",
@@ -441,9 +441,9 @@ export const main = ($) => {
                 const SPAN = createElmInstantly(
                     "span",
                     {
-                        textContent: $.data.superMessage === undefined
-                            ? `A Super ${$.data.name} has spawned somewhere!`
-                            : $.data.superMessage
+                        textContent: $.options.superMessage === undefined
+                            ? `A Super ${$.options.name} has spawned somewhere!`
+                            : $.options.superMessage
                     },
                     {}
                 );
@@ -459,9 +459,9 @@ export const main = ($) => {
                 const SPAN = createElmInstantly(
                     "span",
                     {
-                        textContent: $.data.superMessage === null || $.data.superMessage === undefined
-                            ? `（Super ${$.data.name}がどこかで出現中！）`
-                            : `（${$.data.JAsuperMessage}）`
+                        textContent: $.options.superMessage === null || $.options.superMessage === undefined
+                            ? `（Super ${$.options.name}がどこかで出現中！）`
+                            : `（${$.options.JAsuperMessage}）`
                     },
                     {}
                 );
