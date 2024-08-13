@@ -6,6 +6,9 @@
         "loadSVG": {
             "arg": {}
         },
+        "prettyComment": {
+            "arg": {}
+        },
         "redirectDetector": {
             "arg": {}
         },
