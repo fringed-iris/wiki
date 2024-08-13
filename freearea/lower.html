@@ -150,6 +150,7 @@
                 const SPAN = SYNTAX[i];
                 const ID = `${funcName}${i}`;
                 SPAN.id = ID;
+                SPAN.style.display = "none";
 
                 let data = {
                     url: "",
@@ -163,10 +164,10 @@
                 }
 
                 data.arg = {};
-                if (data.arg.options)
-                    data.arg.options = getArg(SPAN.textContent, property.arg.options);
-                if (data.arg.originId)
-                    data.arg.originId = ID;
+                if (property.arg.options) data.arg.options = getArg(SPAN.textContent, property.arg.options);
+                if (property.arg.originId) data.arg.originId = ID;
+
+                console.log(data);
 
                 run(data.url, data.arg);
             }
@@ -189,16 +190,13 @@
         }
     })();
 
-    window.addEventListener("load", () => {
-        console.log("window.loadが実行されました。");
-
+    {
         load(CONFIG, "general");
         load(CONFIG, "unique syntax");
         load(CONFIG, "external");
 
         console.log("全ての外部スクリプトが読み込まれました。");
-    });
-
+    }
 
     //???
     (() => {
