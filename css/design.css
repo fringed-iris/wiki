@@ -1909,14 +1909,14 @@ ul.user_comment_list .ulist3 {
 	transform: translateX(calc(-100% - 30px));
 }
 
-.shakingIcon img {
+.shakingIcon a>* {
 	filter: none;
 	transition: filter .2s ease-out;
 	width: 70px;
 	border-radius: 35px;
 }
 
-.shakingIcon img:hover {
+.shakingIcon a>*:hover {
 	filter: brightness(1.4);
 	animation: shake .2s linear infinite
 }

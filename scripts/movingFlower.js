@@ -19,8 +19,8 @@ function s(size) {
 }
 
 let canvasSize = {
-    w: 55,
-    h: 55
+    w: 70,
+    h: 70
 }
 
 let center = {
