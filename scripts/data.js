@@ -1,4 +1,6 @@
-export const florr = {}  //初期化
+//初期化
+export const florr = {}
+
 //レアリティ関連のデータ
 florr.rarity = {};
 ($ => {
@@ -49,7 +51,9 @@ florr.rarity = {};
         }
     }
 })(florr.rarity);
+
 florr.rarity.length = Object.keys(florr.rarity.id).length / 2;
+
 florr.themeColor = (() => {
     const ROOT = getComputedStyle(document.documentElement);
 
@@ -60,6 +64,7 @@ florr.themeColor = (() => {
         dark_gray: ROOT.getPropertyValue('--c-dark_gray')
     }
 })();
+
 florr.database = {//ペタル、モブ関連のデータ
     //モブの体力比
     mobHealthFactor: [1.0, 3.75, 13.5, 54, 405, 2430, 29160, 1312200],

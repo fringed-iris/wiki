@@ -67,7 +67,7 @@
 
     /*このCSSでは無効にされる属性はjavascriptで書き換える*/
 </style>
-<script>
+<script type="module">
     /* -----------------------------------------------
     
     florr.io JPwiki 総合管理システム
@@ -84,8 +84,15 @@
 
 
     const run = async (path = "", arg = {}) => {
-        const OBJ = await import(path);
-        OBJ.main(arg);
+        try {
+            const OBJ = await import(path);
+
+            console.log(arg);
+
+            OBJ.main(arg);
+        } catch (error) {
+            console.log(`外部スクリプト${path}の読み込みに失敗しました。`, error);
+        }
     }
     const load = (json, type) => {
         const escape = (str = "") => {
@@ -126,11 +133,11 @@
                         const OBJ = new Function(`return {${text}};`);
                         return safetyProc(OBJ());
                     case "string":
-                        return escape(SPAN.textContent)
+                        return escape(text)
                     case "number":
-                        return parseFloat(SPAN.textContent);
+                        return parseFloat(text);
                     case "boolean":
-                        return !!SPAN.textContent;
+                        return !!text;
 
                     default:
                         return undefined;
@@ -154,16 +161,12 @@
                 } else {
                     data.url = `https://fringed-iris.github.io/wiki/scripts/${type}/${funcName}.js`;
                 }
-                
-                if (typeof property.arg === "object") {
-                    data.arg = {};
 
-                    Object.keys(property.arg).forEach(p => {
-                        data.arg[p] = getArg(SPAN.textContent, property.arg[p])
-                    });
-                } else {
-                    data.arg = getArg(SPAN.textContent, property.arg);
-                }
+                data.arg = {};
+                if (data.arg.options)
+                    data.arg.options = getArg(SPAN.textContent, property.arg.options);
+                if (data.arg.originId)
+                    data.arg.originId = ID;
 
                 run(data.url, data.arg);
             }
@@ -173,17 +176,27 @@
         SCRIPTS.forEach(n => loadByFncName(n, json[type][n]));
     }
 
-    const CONFIG = (async () => {
-        const REQ = await fetch("https://fringed-iris.github.io/wiki/scripts/config.json");
-        const RES = await REQ.json();
+    const CONFIG = await (async () => {
+        try {
+            const REQ = await fetch("https://fringed-iris.github.io/wiki/scripts/config.json")
+            const RES = await REQ.json();
 
-        return RES;
+            console.log("config.jsonが読み込まれました。", RES);
+
+            return RES;
+        } catch (error) {
+            console.log("config.jsonの読み込みに失敗しました。", error)
+        }
     })();
 
-    document.addEventListener("load", () => {
+    window.addEventListener("load", () => {
+        console.log("window.loadが実行されました。");
+
         load(CONFIG, "general");
         load(CONFIG, "unique syntax");
         load(CONFIG, "external");
+
+        console.log("全ての外部スクリプトが読み込まれました。");
     });
 
 

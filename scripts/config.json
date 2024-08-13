@@ -1,53 +1,56 @@
 {
     "general": {
         "arrangeForMobile": {
-            "arg": ""
+            "arg": {}
         },
         "loadSVG": {
-            "arg": ""
+            "arg": {}
         },
         "prettyComment": {
-            "arg": ""
+            "arg": {}
         },
         "redirectDetector": {
-            "arg": ""
+            "arg": {}
         },
         "usercode": {
-            "arg": ""
+            "arg": {}
         },
         "userscript": {
-            "arg": ""
+            "arg": {}
         },
         "wikiEditorAddon": {
-            "arg": ""
+            "arg": {}
         }
     },
     "unique syntax": {
         "redirect": {
-            "arg": "string"
+            "arg": {
+                "options": "string",
+                "originId": false
+            }
         },
         "mobcode": {
             "arg": {
                 "options": "object",
-                "originId": "string"
+                "originId": true
             }
         },
         "mobinfo": {
             "arg": {
                 "options": "object",
-                "originId": "string"
+                "originId": true
             }
         },
         "petalcode": {
             "arg": {
                 "options": "object",
-                "originId": "string"
+                "originId": true
             }
         },
         "petalinfo": {
             "arg": {
                 "options": "object",
-                "originId": "string"
+                "originId": true
             }
         }
     },

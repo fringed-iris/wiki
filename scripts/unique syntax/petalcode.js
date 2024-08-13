@@ -257,7 +257,7 @@ const Column = class {
 
     constructor(options) {
         this.fieldId = options.fieldId; //Fieldに依存
-        this.field; 
+        this.field;
         this.secondFieldId = options.secondFieldId ?? undefined;
         this.secondField;
         this.toFixed = options.toFixed ?? DEFAULT_TOFIXED_NUM;
@@ -418,7 +418,7 @@ const buildFieldColumnRelation = function (fieldDict, columnArr) {
 
 
 
-export const main = (originId, options) => {
+export const main = ($) => {
 
     const TABLE = document.createElement("table");
 
@@ -445,7 +445,7 @@ export const main = (originId, options) => {
         let columnArr = [];
 
         //----- Field -----
-        options.fieldOptions ??= {};
+        $.options.fieldOptions ??= {};
         //レアリティ
         fieldDict["petalRarity"] = new Field({
             "type": "constant",
@@ -454,21 +454,21 @@ export const main = (originId, options) => {
         });
 
         //petalCount(ユーザーに上書きされないField)
-        let petalCountIsHidden = !options.petalUniqueCounts && !(options.petalCount && options.petalCount != 1);
+        let petalCountIsHidden = !$.options.petalUniqueCounts && !($.options.petalCount && $.options.petalCount != 1);
         {
             let popts = {}
 
-            if (options.petalUniqueCounts) {
+            if ($.options.petalUniqueCounts) {
                 popts = {
                     "type": "unique",
-                    "uniqueDatas": options.petalUniqueCounts,
+                    "uniqueDatas": $.options.petalUniqueCounts,
                     "isHidden": true,
                 }
             } else {
                 popts = {
                     "type": "constant",
                     "increase": 0,
-                    "base": options.petalCount ?? 1,
+                    "base": $.options.petalCount ?? 1,
                     "isHidden": true,
                 }
             }
@@ -493,33 +493,33 @@ export const main = (originId, options) => {
         }
 
         //総攻撃力(基礎)
-        fieldDict["damage"] = new Field(options.fieldOptions.damage ?? {
+        fieldDict["damage"] = new Field($.options.fieldOptions.damage ?? {
             "type": "normal",
-            "base": options.baseDamage ?? 0,
+            "base": $.options.baseDamage ?? 0,
         });
 
         //単体攻撃力
-        fieldDict["singleDamage"] = new Field(options.fieldOptions.singleDamage ?? {
+        fieldDict["singleDamage"] = new Field($.options.fieldOptions.singleDamage ?? {
             "type": "FoverF",
             "baseFieldId": "damage",
             "secondBaseFieldId": "petalCount",
         });
 
         //総攻撃力（最終）
-        fieldDict["finalDamage"] = new Field(options.fieldOptions.finalDamage ?? {
+        fieldDict["finalDamage"] = new Field($.options.fieldOptions.finalDamage ?? {
             "type": "FtimesF",
             "baseFieldId": "damage",
             "secondBaseFieldId": "petalCountChangeRatio",
         });
 
         //体力の和
-        fieldDict["healthSum"] = new Field(options.fieldOptions.healthSum ?? {
+        fieldDict["healthSum"] = new Field($.options.fieldOptions.healthSum ?? {
             "type": "normal",
-            "base": options.baseHealth ?? 0,
+            "base": $.options.baseHealth ?? 0,
         });
 
         //体力
-        fieldDict["health"] = new Field(options.fieldOptions.health ?? {
+        fieldDict["health"] = new Field($.options.fieldOptions.health ?? {
             "type": "FoverF",
             "baseFieldId": "healthSum",
             "secondBaseFieldId": "petalCount",
@@ -530,57 +530,57 @@ export const main = (originId, options) => {
             let ropts = {
                 "relatedTalent": "reload",
             }
-            if (options.reloadUniqueTimes) {
+            if ($.options.reloadUniqueTimes) {
                 Object.assign(ropts, {
                     "type": "unique",
-                    "uniqueDatas": options.reloadUniqueTimes,
+                    "uniqueDatas": $.options.reloadUniqueTimes,
                 });
             } else {
                 Object.assign(ropts, {
                     "type": "constant",
-                    "base": options.reloadTime ?? 0,
+                    "base": $.options.reloadTime ?? 0,
                     "increase": 0,
                 });
             }
-            fieldDict["reload"] = new Field(options.fieldOptions.reload ?? ropts)
+            fieldDict["reload"] = new Field($.options.fieldOptions.reload ?? ropts)
         }
 
         //セカンドリロード
         {
             let ropts = {
             }
-            if (options.secondReloadUniqueTimes) {
+            if ($.options.secondReloadUniqueTimes) {
                 Object.assign(ropts, {
                     "type": "unique",
-                    "uniqueDatas": options.secondReloadUniqueTimes,
+                    "uniqueDatas": $.options.secondReloadUniqueTimes,
                 })
             } else {
                 Object.assign(ropts, {
                     "type": "constant",
-                    "base": options.secondReloadTime ?? 0,
+                    "base": $.options.secondReloadTime ?? 0,
                     "increase": 0,
                 })
             }
-            fieldDict["secondReload"] = new Field(options.fieldOptions.secondReload ?? ropts);
+            fieldDict["secondReload"] = new Field($.options.fieldOptions.secondReload ?? ropts);
         }
 
         //毒
-        fieldDict["poison"] = new Field(options.fieldOptions.poison ?? {
+        fieldDict["poison"] = new Field($.options.fieldOptions.poison ?? {
             "type": "normal",
-            "base": options.basePoison ?? 0,
+            "base": $.options.basePoison ?? 0,
             "relatedTalent": "poison",
         });
 
         //毒持続
-        fieldDict["poisonDuration"] = new Field(options.fieldOptions.poisonDuration ?? {
+        fieldDict["poisonDuration"] = new Field($.options.fieldOptions.poisonDuration ?? {
             "type": "constant",
-            "base": options.poisonDuration ?? 0,
+            "base": $.options.poisonDuration ?? 0,
             "increase": 0,
             "relatedTalent": "CPoison",
         });
 
         //毒秒間
-        fieldDict["poisonPerSec"] = new Field(options.fieldOptions.poisonPerSec ?? {
+        fieldDict["poisonPerSec"] = new Field($.options.fieldOptions.poisonPerSec ?? {
             "type": "FoverF",
             "baseFieldId": "poison",
             "secondBaseFieldId": "poisonDuration",
@@ -589,7 +589,7 @@ export const main = (originId, options) => {
 
 
         //-----Column -----
-        options.columnOptions ??= {};
+        $.options.columnOptions ??= {};
 
         columnArr.push(new Column({
             "name": "レアリティ",
@@ -598,7 +598,7 @@ export const main = (originId, options) => {
             "width": 95,
         }));
 
-        options.columnOptions.petalCount = {
+        $.options.columnOptions.petalCount = {
             "name": "ペタルの個数",
             "viewType": "normal",
             "toFixed": 0,
@@ -607,42 +607,42 @@ export const main = (originId, options) => {
             "isHidden": petalCountIsHidden,
         };
 
-        options.columnOptions.damage ??= {
+        $.options.columnOptions.damage ??= {
             "name": petalCountIsHidden ? "攻撃力" : "総攻撃力",
             "viewType": petalCountIsHidden ? "normal" : "damage",
             "fieldId": "finalDamage",
             "secondFieldId": "singleDamage",
-            "isHidden": !options.baseDamage,
+            "isHidden": !$.options.baseDamage,
         }
 
-        options.columnOptions.health ??= {
+        $.options.columnOptions.health ??= {
             "name": "体力",
             "viewType": "normal",
             "fieldId": "health",
-            "isHidden": !options.baseHealth,
+            "isHidden": !$.options.baseHealth,
         }
 
-        options.columnOptions.reload ??= {
+        $.options.columnOptions.reload ??= {
             "name": "再生時間",
             "viewType": "reload",
             "fieldId": "reload",
             "secondFieldId": "secondReload",
             "last": "s",
-            "isHidden": !(options.reloadTime) && !(options.reloadUniqueTimes),
+            "isHidden": !($.options.reloadTime) && !($.options.reloadUniqueTimes),
         }
 
-        options.columnOptions.poison ??= {
+        $.options.columnOptions.poison ??= {
             "name": "毒",
             "viewType": "poison",
             "fieldId": "poison",
             "secondFieldId": "poisonDuration",
-            "isHidden": !options.basePoison,
+            "isHidden": !$.options.basePoison,
         }
         {
             let arr = ["petalCount", "damage", "health", "reload", "poison"];
             arr.forEach(e => {
-                if (!options.columnOptions[e].isHidden) {
-                    columnArr.push(new Column(options.columnOptions[e]));
+                if (!$.options.columnOptions[e].isHidden) {
+                    columnArr.push(new Column($.options.columnOptions[e]));
                 }
             });
         }
@@ -651,13 +651,13 @@ export const main = (originId, options) => {
         //isHiddenを使用することで、specialFieldArrとして扱うことができるようにする
         //Fieldに新しいプロパティが追加されるたびにここを更新すること
         //specialStatus
-        if (options.specialStatus) {
+        if ($.options.specialStatus) {
 
-            for (let i = 0; i < options.specialStatus.length; i++) {
+            for (let i = 0; i < $.options.specialStatus.length; i++) {
 
-                let opts = options.specialStatus[i];
+                let opts = $.options.specialStatus[i];
                 let Fopts, Copts;
-                
+
                 {
                     //specialStatusのオプションを、fieldとcolumnに振り分ける。補完は行わない
                     const convertSpecialStatusInto = function (options) {
@@ -725,9 +725,9 @@ export const main = (originId, options) => {
             }
         }
 
-        if (options.specialColumnArr) { //超上級者向け
-            for (let i = 0; i < options.specialColumnArr.length; i++) {
-                let opts = options.specialColumnArr[i];
+        if ($.options.specialColumnArr) { //超上級者向け
+            for (let i = 0; i < $.options.specialColumnArr.length; i++) {
+                let opts = $.options.specialColumnArr[i];
                 columnArr.push(new Column(opts));
             }
         }
@@ -748,7 +748,7 @@ export const main = (originId, options) => {
                     columnArr[j].pushNewCell(TD);
                 }
             }
-            if (rID != -1 && rID < options.leastRarity) TR.style.display = "none";
+            if (rID != -1 && rID < $.options.leastRarity) TR.style.display = "none";
         }
 
         //アップデート系
@@ -759,7 +759,7 @@ export const main = (originId, options) => {
         TABLE.appendChild(TBODY);
     }
     {//表を挿入
-        const DIV = document.getElementById(originId).parentNode;
+        const DIV = document.getElementById($.originId).parentNode;
         DIV.parentNode.insertBefore(TABLE, DIV);
         {
             const P = document.createElement("p");

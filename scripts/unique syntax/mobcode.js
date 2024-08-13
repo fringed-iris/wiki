@@ -24,10 +24,10 @@ const calcAbility = function (baseAbility, type) {
 
     return TABLE;
 }
-export const main = function (originId, options) {
+export const main = function ($) {
     const TABLE = document.createElement("table");
     {
-        const DIV = document.getElementById(originId).parentNode;
+        const DIV = document.getElementById($.originId).parentNode;
         DIV.parentNode.insertBefore(TABLE, DIV);
 
         let text = document.createElement("p");
@@ -40,24 +40,24 @@ export const main = function (originId, options) {
 
     for (let rarityID = -1; rarityID < RARITY_LEN / 2; rarityID++) {
         if (
-            (rarityID !== -1 && rarityID < options.leastRarity)
-            || options.maxRarity < rarityID
+            (rarityID !== -1 && rarityID < $.options.leastRarity)
+            || $.options.maxRarity < rarityID
         ) continue;
 
         const TR = TBODY.insertRow();
 
         const RARITY_OPTS = {};
         if (-1 < rarityID) {
-            RARITY_OPTS.health = calcAbility(options.baseHealth, "health")[rarityID];
-            RARITY_OPTS.damage = calcAbility(options.baseDamage)[rarityID];
-            if (options.baseMaxHealth) RARITY_OPTS.maxHealth = calcAbility(options.baseMaxHealth, "health")[rarityID];
-            RARITY_OPTS.special = options.specialStatus.map(e => {
+            RARITY_OPTS.health = calcAbility($.options.baseHealth, "health")[rarityID];
+            RARITY_OPTS.damage = calcAbility($.options.baseDamage)[rarityID];
+            if ($.options.baseMaxHealth) RARITY_OPTS.maxHealth = calcAbility($.options.baseMaxHealth, "health")[rarityID];
+            RARITY_OPTS.special = $.options.specialStatus.map(e => {
                 if (e.type == "health") return calcAbility(e.base, "health")[rarityID];
                 return calcAbility(e.base)[rarityID];
             });
             RARITY_OPTS.armor =
                 calcAbility(window.florr.database.defaultArmor)[Math.min(rarityID, 6)]
-                + (options.baseArmor ? calcAbility(options.baseArmor)[rarityID] : 0);
+                + ($.options.baseArmor ? calcAbility($.options.baseArmor)[rarityID] : 0);
         }
 
         {//レアリティのセル
@@ -91,7 +91,7 @@ export const main = function (originId, options) {
             if (rarityID === -1) {
                 const TH = document.createElement("th");
                 TH.innerText = "体力";
-                TH.style.width = options.baseMaxHealth
+                TH.style.width = $.options.baseMaxHealth
                     ? "170px"
                     : "85px";
 
@@ -100,7 +100,7 @@ export const main = function (originId, options) {
                 const TD = TR.insertCell();
                 TD.style.textAlign = "center";
                 TD.innerText = String(RARITY_OPTS.health);
-                if (options.baseMaxHealth) TD.innerText += `~${String(RARITY_OPTS.maxHealth)}`;
+                if ($.options.baseMaxHealth) TD.innerText += `~${String(RARITY_OPTS.maxHealth)}`;
             }
         }
         {//アーマーのセル
@@ -116,8 +116,8 @@ export const main = function (originId, options) {
                 TD.innerText = String(Math.round(RARITY_OPTS.armor));
             }
         }
-        for (let i = 0; i < options.specialStatus.length; i++) {//その他カスタムプロパティ
-            const STATUS = options.specialStatus[i];
+        for (let i = 0; i < $.options.specialStatus.length; i++) {//その他カスタムプロパティ
+            const STATUS = $.options.specialStatus[i];
             STATUS.last
 
             if (rarityID === -1) {

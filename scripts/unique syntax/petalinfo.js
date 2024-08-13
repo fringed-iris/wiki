@@ -9,10 +9,10 @@ ver.1.5
 
 /**
  * 
- * @param {String} origin 挿入先の兄弟要素のID 
- * @param {Object} data 生成データ
+ * @param {String} $.originId 挿入先の兄弟要素のID 
+ * @param {Object} $.data 生成データ
  */
-export const main = (origin, data) => {
+export const main = ($) => {
     /**
      * 全体のスタイル
      */
@@ -82,7 +82,7 @@ export const main = (origin, data) => {
         const IMG = createElmInstantly(
             "img",
             {
-                src: `/image/${data.leastRarity}_${data.name}`
+                src: `/image/${$.data.leastRarity}_${$.data.name}`
             },
             STYLE.captionImg
         );
@@ -202,21 +202,21 @@ export const main = (origin, data) => {
         STYLE.tbody
     );
     const ANY = {
-        alias: typeof data?.alias == "string",
-        differenceImg: typeof data?.differenceImg === "object",
+        alias: typeof $.data?.alias == "string",
+        differenceImg: typeof $.data?.differenceImg === "object",
     }
     const MAX_COL = 4;
 
     if (ANY.differenceImg) {//differenceImgの処理        
         let sortedId = [];
-        for (let i = 0; i < data.differenceImg.length; i++) {
-            const E = data.differenceImg[i];
-            if (window.florr.rarity.id[E] > window.florr.rarity.id[data.leastRarity]) sortedId.push([window.florr.rarity.id[E], E])
+        for (let i = 0; i < $.data.differenceImg.length; i++) {
+            const E = $.data.differenceImg[i];
+            if (window.florr.rarity.id[E] > window.florr.rarity.id[$.data.leastRarity]) sortedId.push([window.florr.rarity.id[E], E])
         }
         sortedId.sort();
 
-        data.differenceImg = [];
-        for (let i = 0; i < sortedId.length; i++) data.differenceImg.push(sortedId[i][1])
+        $.data.differenceImg = [];
+        for (let i = 0; i < sortedId.length; i++) $.data.differenceImg.push(sortedId[i][1])
     }
     {
         const TR = document.createElement("tr");
@@ -224,9 +224,9 @@ export const main = (origin, data) => {
         {//見出し画像
             if (ANY.differenceImg) {
                 const TD = createCaptionImg({
-                    colSpan: data.differenceImg.length > MAX_COL
+                    colSpan: $.data.differenceImg.length > MAX_COL
                         ? MAX_COL
-                        : data.differenceImg.length
+                        : $.data.differenceImg.length
                 });
 
                 TR.appendChild(TD);
@@ -238,9 +238,9 @@ export const main = (origin, data) => {
                 {
                     const CHILD_TD = createDifferenceImgRarity({
                         create: true,
-                        rarity: window.florr.rarity.name[data.leastRarity],
-                        dif: window.florr.rarity.length - window.florr.rarity.id[data.leastRarity],
-                        color: window.florr.rarity.color.background[data.leastRarity],
+                        rarity: window.florr.rarity.name[$.data.leastRarity],
+                        dif: window.florr.rarity.length - window.florr.rarity.id[$.data.leastRarity],
+                        color: window.florr.rarity.color.background[$.data.leastRarity],
                     });
                     CHILD_TD.style.display = "block";
 
@@ -254,10 +254,10 @@ export const main = (origin, data) => {
             if (ANY.differenceImg) {
                 const TD = createComment({
                     rowSpan: 1 + (
-                        1 + Math.ceil(data.differenceImg.length / MAX_COL) * 2 - 2
+                        1 + Math.ceil($.data.differenceImg.length / MAX_COL) * 2 - 2
                         + (ANY.alias ? -1 : 1)),
 
-                    textContent: data.comment,
+                    textContent: $.data.comment,
                 });
 
                 TR.appendChild(TD);
@@ -268,7 +268,7 @@ export const main = (origin, data) => {
 
                 {
                     const SPAN = document.createElement("span");
-                    SPAN.textContent = data.comment;
+                    SPAN.textContent = $.data.comment;
 
                     {//改行
                         TD.appendChild(createBr());
@@ -288,7 +288,7 @@ export const main = (origin, data) => {
             } else {
                 const TD = createComment({
                     rowSpan: 2,
-                    textContent: data.comment,
+                    textContent: $.data.comment,
                 });
 
                 TR.appendChild(TD);
@@ -299,13 +299,13 @@ export const main = (origin, data) => {
     }
     if (ANY.differenceImg) {
         let column = 0;
-        for (column; column < Math.ceil(data.differenceImg.length / MAX_COL); column++) {
+        for (column; column < Math.ceil($.data.differenceImg.length / MAX_COL); column++) {
             const FROM = column * MAX_COL;
-            const TO = data.differenceImg.length > MAX_COL
+            const TO = $.data.differenceImg.length > MAX_COL
                 ? (column + 1) * MAX_COL
-                : data.differenceImg.length;
-            const DATA_END = TO > data.differenceImg.length
-                ? data.differenceImg.length
+                : $.data.differenceImg.length;
+            const DATA_END = TO > $.data.differenceImg.length
+                ? $.data.differenceImg.length
                 : TO;
 
             {
@@ -314,11 +314,11 @@ export const main = (origin, data) => {
                 for (let i = FROM; i < TO; i++) {//差分画像
                     const TD = createDifferenceImg(
                         {
-                            create: i < data.differenceImg.length,
-                            src: `/image/${data.differenceImg[i]}_${data.name}`
+                            create: i < $.data.differenceImg.length,
+                            src: `/image/${$.data.differenceImg[i]}_${$.data.name}`
                         },
                         {
-                            rowSpan: ANY.alias && DATA_END === data.differenceImg.length
+                            rowSpan: ANY.alias && DATA_END === $.data.differenceImg.length
                                 ? 2
                                 : 1,
                         }
@@ -326,7 +326,7 @@ export const main = (origin, data) => {
 
                     TR.appendChild(TD);
                 }
-                if (ANY.alias && DATA_END === data.differenceImg.length) {//通称（見出し）
+                if (ANY.alias && DATA_END === $.data.differenceImg.length) {//通称（見出し）
                     const TD = createAliasSubtitle();
 
                     TR.appendChild(TD);
@@ -334,7 +334,7 @@ export const main = (origin, data) => {
 
                 TBODY.appendChild(TR);
             }
-            if (ANY.alias && DATA_END === data.differenceImg.length) {//通称
+            if (ANY.alias && DATA_END === $.data.differenceImg.length) {//通称
                 const TR = document.createElement("tr");
 
                 {
@@ -342,7 +342,7 @@ export const main = (origin, data) => {
                         "td",
                         {
                             rowSpan: 2,
-                            textContent: data.alias,
+                            textContent: $.data.alias,
                         },
                         {}
                     );
@@ -356,13 +356,13 @@ export const main = (origin, data) => {
                 const TR = document.createElement("tr");
 
                 for (let i = FROM; i < TO; i++) {
-                    const DIF = window.florr.rarity.id[data.differenceImg[i + 1]] ?? (window.florr.rarity.length - 1) - window.florr.rarity.id[data.differenceImg[i]];
+                    const DIF = window.florr.rarity.id[$.data.differenceImg[i + 1]] ?? (window.florr.rarity.length - 1) - window.florr.rarity.id[$.data.differenceImg[i]];
                     const TD = createDifferenceImgRarity(
                         {
                             create: DATA_END > i,
-                            rarity: window.florr.rarity.name[data.differenceImg[i]],
+                            rarity: window.florr.rarity.name[$.data.differenceImg[i]],
                             dif: DIF,
-                            color: window.florr.rarity.color.background[data.differenceImg[i]]
+                            color: window.florr.rarity.color.background[$.data.differenceImg[i]]
                         }
                     );
 
@@ -390,7 +390,7 @@ export const main = (origin, data) => {
 
                 {
                     const SPAN = document.createElement("span");
-                    SPAN.textContent = data.alias;
+                    SPAN.textContent = $.data.alias;
 
                     {//改行
                         TD.appendChild(createBr());
@@ -412,5 +412,5 @@ export const main = (origin, data) => {
     }
 
     TABLE.appendChild(TBODY);
-    document.getElementById(origin).after(TABLE);
+    document.getElementById($.originId).after(TABLE);
 }

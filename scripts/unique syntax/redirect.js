@@ -7,11 +7,11 @@ ver.2.0
 
 "use strict";
 
-export const main = (orgId, dir) => {
-    const ORG = document.getElementById(orgId);
+export const main = ($) => {
+    const ORG = document.getElementById($.originId);
     const ADR = {
         from: location.pathname.split("/")[2] ?? "",//https://newflorrio.wiki.fc2.com[0]/[1]/[2]/
-        to: dir
+        to: $.options
     }
 
     if (!sessionStorage.getItem("redirect") && ADR.from && ADR.to) {
