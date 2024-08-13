@@ -2221,7 +2221,7 @@ canvas#doodle {
 		transform: none;
 	}
 
-	.shakingIcon img {
+	.shakingIcon a>* {
 		width: 4rem;
 		border-radius: 2rem;
 	}
