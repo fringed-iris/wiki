@@ -1,3 +1,10 @@
+/* ----------
+mobcode 
+
+ver.1.5
+---------- */
+
+
 "use strict";
 
 /**
@@ -35,10 +42,6 @@ export const main = (origin, data) => {
         differenceImg: {
             width: "80px",
             height: "80px"
-        },
-        superMessage: {
-            backgroundColor: window.florr.rarity.color.background["Sp"],
-            color: window.florr.rarity.color.text["Sp"]
         }
     }
 
@@ -79,7 +82,7 @@ export const main = (origin, data) => {
         const IMG = createElmInstantly(
             "img",
             {
-                src: `/image/${data.leastRarity}_${data.name.replace(/\s/g, "")}_Mob`
+                src: `/image/${data.leastRarity}_${data.name}`
             },
             STYLE.captionImg
         );
@@ -312,7 +315,7 @@ export const main = (origin, data) => {
                     const TD = createDifferenceImg(
                         {
                             create: i < data.differenceImg.length,
-                            src: `/image/${data.differenceImg[i]}_${data.name.replace(/\s/g, "")}_Mob`
+                            src: `/image/${data.differenceImg[i]}_${data.name}`
                         },
                         {
                             rowSpan: ANY.alias && DATA_END === data.differenceImg.length
@@ -404,65 +407,6 @@ export const main = (origin, data) => {
                 TR.appendChild(TD);
             }
 
-            TBODY.appendChild(TR);
-        }
-    }
-    if (!(data.super === false)) {//Superメッセージ
-        {//Superタイトル
-            const TH = createElmInstantly(
-                "th",
-                {
-                    textContent: "Super出現メッセージ",
-                    colSpan: MAX_COL + 1
-                },
-                {}
-            );
-
-            TBODY.appendChild(TH);
-        }
-        {//Superメッセージ
-            const TR = document.createElement("tr");
-            const TD = createElmInstantly(
-                "td",
-                {
-                    colSpan: MAX_COL + 1
-                },
-                STYLE.superMessage
-            );
-
-            {//Superメッセージ
-                const SPAN = createElmInstantly(
-                    "span",
-                    {
-                        textContent: data.superMessage === undefined
-                            ? `A Super ${data.name} has spawned somewhere!`
-                            : data.superMessage
-                    },
-                    {}
-                );
-
-                TD.appendChild(SPAN);
-            }
-            {//改行
-                const BR = document.createElement("br");
-
-                TD.appendChild(BR);
-            }
-            {//Superメッセージ和訳（任意）
-                const SPAN = createElmInstantly(
-                    "span",
-                    {
-                        textContent: data.superMessage === null || data.superMessage === undefined
-                            ? `（Super ${data.name}がどこかで出現中！）`
-                            : `（${data.JAsuperMessage}）`
-                    },
-                    {}
-                );
-
-                TD.appendChild(SPAN);
-            }
-
-            TR.appendChild(TD);
             TBODY.appendChild(TR);
         }
     }

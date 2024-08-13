@@ -1,3 +1,10 @@
+/* ----------
+petalcode 
+
+ver.4.2
+---------- */
+
+
 "use strict";
 
 const DEFAULT_TOFIXED_NUM = 1;

@@ -77,75 +77,10 @@
     ----------------------------------------------- */
 
 
-    //window.florrが全てのwikiスクリプトを内包
-    window.florr = {}  //初期化
-    //レアリティ関連のデータ
-    window.florr.rarity = {};
-    ($ => {
-        //レアリティID　←→　配列番号
-        $.id = {};
-        $.id[$.id["Cm"] = 0] = "Cm";
-        $.id[$.id["Un"] = 1] = "Un";
-        $.id[$.id["Re"] = 2] = "Re";
-        $.id[$.id["Ep"] = 3] = "Ep";
-        $.id[$.id["Lg"] = 4] = "Lg";
-        $.id[$.id["My"] = 5] = "My";
-        $.id[$.id["Ul"] = 6] = "Ul";
-        $.id[$.id["Sp"] = 7] = "Sp";
+    import { florr } from "https://fringed-iris.github.io/wiki/scripts/data.js"
 
-        //レアリティID　←→　レアリティ名
-        $.name = {};
-        $.name[$.name["Common"] = "Cm"] = "Common";
-        $.name[$.name["Unusual"] = "Un"] = "Unusual";
-        $.name[$.name["Rare"] = "Re"] = "Rare";
-        $.name[$.name["Epic"] = "Ep"] = "Epic";
-        $.name[$.name["Legendary"] = "Lg"] = "Legendary";
-        $.name[$.name["Mythic"] = "My"] = "Mythic";
-        $.name[$.name["Ultra"] = "Ul"] = "Ultra";
-        $.name[$.name["Super"] = "Sp"] = "Super";
 
-        //レアリティID　→　レアリティ色
-        $.color = {
-            background: {
-                borderMask: "#00000030",    //フチの色（シェーダー）
-                [$.id[0]]: "#7eef6d",
-                [$.id[1]]: "#ffe65d",
-                [$.id[2]]: "#4d52e3",
-                [$.id[3]]: "#861fde",
-                [$.id[4]]: "#de1f1f",
-                [$.id[5]]: "#1fdbde",
-                [$.id[6]]: "#ff2b75",
-                [$.id[7]]: "#2bffa3"
-            },
-            text: {
-                [$.id[0]]: "#000",
-                [$.id[1]]: "#000",
-                [$.id[2]]: "#fff",
-                [$.id[3]]: "#fff",
-                [$.id[4]]: "#fff",
-                [$.id[5]]: "#000",
-                [$.id[6]]: "#fff",
-                [$.id[7]]: "#000"
-            }
-        }
-    })(window.florr.rarity);
-    window.florr.rarity.length = Object.keys(window.florr.rarity.id).length / 2;
-    window.florr.themeColor = (() => {
-        const ROOT = getComputedStyle(document.documentElement);
-
-        return {
-            theme: ROOT.getPropertyValue('--c-theme'),
-            subTheme_dark: ROOT.getPropertyValue('--c-subTheme_dark'),
-            subTheme_light: ROOT.getPropertyValue('--c-subTheme_light'),
-            dark_gray: ROOT.getPropertyValue('--c-dark_gray')
-        }
-    })();
-    window.florr.database = {//ペタル、モブ関連のデータ
-        //モブの体力比
-        mobHealthFactor: [1.0, 3.75, 13.5, 54, 405, 2430, 29160, 1312200],
-        //既定アーマー
-        defaultArmor: 0.8,
-    }
+    window.florr = florr;
 
 
     const run = async (path = "", arg = {}) => {
@@ -205,7 +140,7 @@
                         break;
                 }
 
-                run(data.url, data.arg)
+                run(data.url, data.arg);
             });
         }
 
@@ -213,9 +148,12 @@
         SCRIPTS.forEach(n => loadByFncName(n, json[type][n]));
     }
 
-    const CONFIG = await(
-        await fetch("https://fringed-iris.github.io/wiki/config.json")
-    ).json();
+    const CONFIG = (async () => {
+        const REQ = await fetch("https://fringed-iris.github.io/wiki/scripts/config.json");
+        const RES = await REQ.json();
+
+        return RES;
+    })();
 
     document.addEventListener("load", () => {
         load(CONFIG, "general");
@@ -283,6 +221,8 @@
         }
     })();
 </script>
+
+
 <div class="shakingIcon" id="florrlink">
     <a href="https://florr.io">
         <img src="https://newflorrio.wiki.fc2.com/upload_dir/n/newflorrio/cd18b709026d7bcbecc071ad2e6774db.png">
@@ -298,7 +238,6 @@
             <img src="/image/menubtn.png">
         </a></object>
 </div>
-
 
 
 <!--使用フォント等のライセンス記入欄。絶対に消さないでください。-->

@@ -1,3 +1,9 @@
+/* ----------
+mobcode 
+
+ver.1.6
+---------- */
+
 const RARITY_LEN = Object.keys(window.florr.rarity.id).length;
 
 const calcAbility = function (baseAbility, type) {
