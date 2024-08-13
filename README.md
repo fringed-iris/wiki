@@ -21,7 +21,7 @@
     │   └── ...
     ├── unique syntax/
     │   └── ...
-    └── settings.json
+    └── config.json
 ```
 <dl>
     <dt>abolished</dt>
