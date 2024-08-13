@@ -99,49 +99,74 @@
 
             return res;
         }
-        const safetyProc = (arg = {}) => {
-            let res = arg;
-            Object.keys(res).forEach(p => {
-                if (typeof p === "function") delete res[p];
-            });
+        const safetyProc = (arg) => {
+            if (typeof arg === "object") {
+                let res = arg;
 
-            return res;
-        }
-        const loadByFncName = (funcName = "", p = {}) => {
-            const SYNTAX = document.querySelectorAll(`.user_body span.${funcName}`);
-            SYNTAX.forEach(async e => {
-                let data = {
-                    url: "",
-                    arg: ""
+                if (Array.isArray(res)) {
+                    res.forEach(e => {
+                        if (typeof e === "function") e = undefined;
+                    });
+                } else {
+                    Object.keys(res).forEach(p => {
+                        if (typeof p === "function") res[p] = undefined;
+                    });
                 }
 
-                if (p.url) {
-                    data.url = p.url
+                return res;
+            }
+
+            return {};
+        }
+        const loadByFncName = (funcName = "", property = {}) => {
+            const getArg = (text, type) => {
+                switch (type) {
+                    case "object":
+                        //JSON.parse()ではプロパティ名がstringでないといけないため正しくパースできない
+                        const OBJ = new Function(`return {${text}};`);
+                        return safetyProc(OBJ());
+                    case "string":
+                        return escape(SPAN.textContent)
+                    case "number":
+                        return parseFloat(SPAN.textContent);
+                    case "boolean":
+                        return !!SPAN.textContent;
+
+                    default:
+                        return undefined;
+                }
+            }
+
+            const SYNTAX = document.querySelectorAll(`.user_body span.${funcName}`);
+
+            for (let i = 0; i < SYNTAX.length; i++) {
+                const SPAN = SYNTAX[i];
+                const ID = `${funcName}${i}`;
+                SPAN.id = ID;
+
+                let data = {
+                    url: "",
+                    arg: undefined
+                }
+
+                if (property.url) {
+                    data.url = property.url
                 } else {
                     data.url = `https://fringed-iris.github.io/wiki/scripts/${type}/${funcName}.js`;
                 }
-                switch (p.arg) {
-                    case "object":
-                        //JSON.parse()ではプロパティ名がstringでないといけないため正しくパースできない
-                        const OBJ = new Function(`return {${e.textContent}};`);
-                        data.arg = safetyProc(OBJ());
-                        break;
-                    case "string":
-                        data.arg = escape(e.textContent)
-                        break;
-                    case "number":
-                        data.arg = parseFloat(e.textContent);
-                        break;
-                    case "boolean":
-                        data.arg = !!e.textContent;
-                        break;
+                
+                if (typeof property.arg === "object") {
+                    data.arg = {};
 
-                    default:
-                        break;
+                    Object.keys(property.arg).forEach(p => {
+                        data.arg[p] = getArg(SPAN.textContent, property.arg[p])
+                    });
+                } else {
+                    data.arg = getArg(SPAN.textContent, property.arg);
                 }
 
                 run(data.url, data.arg);
-            });
+            }
         }
 
         const SCRIPTS = Object.keys(json[type]);

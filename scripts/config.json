@@ -23,20 +23,32 @@
         }
     },
     "unique syntax": {
-        "mobcode": {
-            "arg": "object"
-        },
-        "mobinfo": {
-            "arg": "object"
-        },
-        "petalcode": {
-            "arg": "object"
-        },
-        "petalinfo": {
-            "arg": "object"
-        },
         "redirect": {
             "arg": "string"
+        },
+        "mobcode": {
+            "arg": {
+                "options": "object",
+                "originId": "string"
+            }
+        },
+        "mobinfo": {
+            "arg": {
+                "options": "object",
+                "originId": "string"
+            }
+        },
+        "petalcode": {
+            "arg": {
+                "options": "object",
+                "originId": "string"
+            }
+        },
+        "petalinfo": {
+            "arg": {
+                "options": "object",
+                "originId": "string"
+            }
         }
     },
     "external": {}
