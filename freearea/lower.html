@@ -152,17 +152,17 @@
         const OBJ = await import(path);
         OBJ.main(arg);
     }
-    const load = (json, p) => {
+    const load = (json, type) => {
         const escape = (str = "") => {
-            let escapedString = "";
+            let res = "";
             for (let i = 0; i < str.length; i++) {
-                const DEC_CHAR_CODE = str[i].charCodeAt(0);
-                escapedString += DEC_CHAR_CODE > 127
+                const DEC_CHAR = str[i].charCodeAt(0);
+                res += DEC_CHAR > 127
                     ? str[i]
-                    : `\\u{${DEC_CHAR_CODE.toString(16)}}`;
+                    : `\\u{${DEC_CHAR.toString(16)}}`;
             }
 
-            return escapedString;
+            return res;
         }
         const safetyProc = (arg = {}) => {
             let res = arg;
@@ -172,20 +172,45 @@
 
             return res;
         }
-        const loadByFncName = (funcName = "") => {
+        const loadByFncName = (funcName = "", p = {}) => {
             const SYNTAX = document.querySelectorAll(`.user_body span.${funcName}`);
             SYNTAX.forEach(async e => {
-                const ARG = await e.textContent.json() || {};
+                let data = {
+                    url: "",
+                    arg: ""
+                }
 
-                run(
-                    `https://fringed-iris.github.io/wiki/scripts/${type}/${funcName}.js`,
-                    safetyProc(ARG)
-                )
+                if (p.url) {
+                    data.url = p.url
+                } else {
+                    data.url = `https://fringed-iris.github.io/wiki/scripts/${type}/${funcName}.js`;
+                }
+                switch (p.arg) {
+                    case "object":
+                        //JSON.parse()ではプロパティ名がstringでないといけないため正しくパースできない
+                        const OBJ = new Function(`return {${e.textContent}};`);
+                        data.arg = safetyProc(OBJ());
+                        break;
+                    case "string":
+                        data.arg = escape(e.textContent)
+                        break;
+                    case "number":
+                        data.arg = parseFloat(e.textContent);
+                        break;
+                    case "boolean":
+                        data.arg = !!e.textContent;
+                        break;
+
+                    default:
+                        break;
+                }
+
+                run(data.url, data.arg)
             });
         }
 
-        const SCRIPTS = Object.keys(json[p]);
-        SCRIPTS.forEach(n => loadByFncName(n, json[p][n]));
+        const SCRIPTS = Object.keys(json[type]);
+        SCRIPTS.forEach(n => loadByFncName(n, json[type][n]));
     }
 
     const CONFIG = await(
@@ -349,7 +374,3 @@
                      *********:::    :::*********                      
 
 -->
-
-<script>
-
-</script>
