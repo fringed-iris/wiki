@@ -1,8 +1,8 @@
 export function main() {
-    orders = document.getElementsByClassName("getimg");
-    if (orders.length == 0) return;
-    for (let j = 0; j < orders.length; j++) {
-        let string = orders[j].textContent;
+    const ORDER = document.getElementsByClassName("getimg");
+    if (ORDER.length == 0) return;
+    for (let j = 0; j < ORDER.length; j++) {
+        let string = ORDER[j].textContent;
         let number = 0;
         let link;
         for (let i = 0; i < string.length; i++) {
@@ -16,7 +16,7 @@ export function main() {
         let image = document.createElement("img");
         image.src = link;
         image.width = number;
-        orders[j].textContent = "";
-        orders[j].appendChild(image);
+        ORDER[j].textContent = "";
+        ORDER[j].appendChild(image);
     }
 }
