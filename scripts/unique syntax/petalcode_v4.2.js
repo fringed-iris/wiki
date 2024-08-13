@@ -411,7 +411,7 @@ const buildFieldColumnRelation = function (fieldDict, columnArr) {
 
 
 
-const createPetalDataTable = (originId, options) => {
+export const main = (originId, options) => {
 
     const TABLE = document.createElement("table");
 

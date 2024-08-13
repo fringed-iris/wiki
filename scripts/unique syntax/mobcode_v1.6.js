@@ -18,7 +18,7 @@ const calcAbility = function (baseAbility, type) {
 
     return TABLE;
 }
-const createPetalDataTable = function (originId, options) {
+export const main = function (originId, options) {
     const TABLE = document.createElement("table");
     {
         const DIV = document.getElementById(originId).parentNode;
@@ -49,7 +49,7 @@ const createPetalDataTable = function (originId, options) {
                 if (e.type == "health") return calcAbility(e.base, "health")[rarityID];
                 return calcAbility(e.base)[rarityID];
             });
-            RARITY_OPTS.armor = 
+            RARITY_OPTS.armor =
                 calcAbility(window.florr.database.defaultArmor)[Math.min(rarityID, 6)]
                 + (options.baseArmor ? calcAbility(options.baseArmor)[rarityID] : 0);
         }
@@ -112,7 +112,7 @@ const createPetalDataTable = function (originId, options) {
         }
         for (let i = 0; i < options.specialStatus.length; i++) {//その他カスタムプロパティ
             const STATUS = options.specialStatus[i];
-            STATUS.last 
+            STATUS.last
 
             if (rarityID === -1) {
                 const TH = document.createElement("th");

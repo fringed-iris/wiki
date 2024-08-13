@@ -1,0 +1,43 @@
+{
+    "general": {
+        "arrangeForMobile": {
+            "arg": ""
+        },
+        "loadSVG": {
+            "arg": ""
+        },
+        "prettyComment": {
+            "arg": ""
+        },
+        "redirectDetector": {
+            "arg": ""
+        },
+        "usercode": {
+            "arg": ""
+        },
+        "userscript": {
+            "arg": ""
+        },
+        "wikiEditorAddon": {
+            "arg": ""
+        }
+    },
+    "unique syntax": {
+        "mobcode": {
+            "arg": "object"
+        },
+        "mobinfo": {
+            "arg": "object"
+        },
+        "petalcode": {
+            "arg": "object"
+        },
+        "petalinfo": {
+            "arg": "object"
+        },
+        "redirect": {
+            "arg": "string"
+        }
+    },
+    "external": {}
+}
