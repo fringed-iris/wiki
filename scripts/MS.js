@@ -7,7 +7,7 @@ florr.io JPwiki 総合管理システム
 ----------------------------------------------- */
 
 
-import { florr } from "https://fringed-iris.github.io/wiki/scripts/MS.js"
+import { florr } from "https://fringed-iris.github.io/wiki/scripts/data.js"
 
 
 window.florr = florr;
