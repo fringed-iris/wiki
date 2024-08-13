@@ -1,5 +1,8 @@
 {
     "general": {
+        "movingFlower": {
+            "arg": {}
+        },
         "arrangeForMobile": {
             "arg": {}
         },
