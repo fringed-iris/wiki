@@ -15,7 +15,7 @@ let prevTime = Date.now() - targetInterval;
 let angle = Math.PI / 4;
 
 function s(size) {
-    return 0.7 * window.devicePixelRatio * size * (canvasSize.w / 55);
+    return window.devicePixelRatio * size * (canvasSize.w / 55);
 }
 
 let canvasSize = {
