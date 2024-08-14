@@ -15,7 +15,7 @@ let prevTime = Date.now() - targetInterval;
 let angle = Math.PI / 4;
 
 function s(size) {
-    return 0.7 * window.devicePixelRatio * size;
+    return 0.7 * window.devicePixelRatio * size * (canvasSize.w / 55);
 }
 
 let canvasSize = {
@@ -92,7 +92,7 @@ function mainDraw() {
     drawFlower();
 }
 
-export function mainloop() {
+export function main() {
 
     document.body.addEventListener("mousemove", (e) => {
         angle = Math.atan2((e.pageX - window.pageXOffset - canvas.getBoundingClientRect().x) * window.devicePixelRatio - center.x, -((e.pageY - window.pageYOffset - canvas.getBoundingClientRect().y) * window.devicePixelRatio - center.y));
@@ -116,5 +116,5 @@ export function mainloop() {
     if (updated) {
         mainDraw();
     }
-    requestAnimationFrame(mainloop);
+    requestAnimationFrame(main);
 }
