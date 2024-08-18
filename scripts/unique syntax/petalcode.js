@@ -880,7 +880,7 @@ export const main = ($) => {
             label: "なし",
             value: -1,
             color: "var(--c-text_black)",
-            backgroundColor: "var(--c-dark_gray)",
+            backgroundColor: "var(--c-gray_dark)",
         }
 
         const DEFAULT_LABEL = [
