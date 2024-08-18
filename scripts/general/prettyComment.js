@@ -28,7 +28,7 @@ export function main() {
      * @returns {Object} 上記以外
      */
     const getPostData = post => post.match(
-        /^\s*(?<comment>.+) --- (?<poster>.*) \((?<year>\d{4})\/(?<month>\d{2})\/(?<day>\d{2}) (?<h>\d{2}):(?<m>\d{2}):(?<s>\d{2})\)\s*$/
+        /^\s*(?<comment>.+) --- (?<user>.*) \((?<year>\d{4})\/(?<month>\d{2})\/(?<day>\d{2}) (?<h>\d{2}):(?<m>\d{2}):(?<s>\d{2})\)\s*$/
     )?.groups ?? {};
     /**
      * span要素をクラスを付与して生成
@@ -53,9 +53,9 @@ export function main() {
                 const INFO = createSpanWithClass('comment_info');
                 (parentSpan => {//  親Span要素内に投稿情報の子Span要素を挿入
                     {//投稿者名
-                        const SPAN = createSpanWithClass('comment_poster');
-                        SPAN.textContent = DATA.poster === '' ? '名無し' : DATA.poster;
-                        if (DATA.poster === '') SPAN.style.color = "var(--c-text_black)";
+                        const SPAN = createSpanWithClass('comment_user');
+                        SPAN.textContent = DATA.user === '' ? '名無し' : DATA.user;
+                        if (DATA.user === '') SPAN.style.color = "var(--c-text_black)";
                         parentSpan.appendChild(SPAN);
                     }
                     {//投稿日時
