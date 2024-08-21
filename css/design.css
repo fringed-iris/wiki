@@ -1909,6 +1909,10 @@ ul.user_comment_list .ulist3 {
 	transform: translateX(calc(-100% - 30px));
 }
 
+.shakingIcon a {
+	border-radius: 50%;
+}
+
 .shakingIcon a>* {
 	filter: none;
 	transition: filter .2s ease-out;
