@@ -134,7 +134,6 @@ const Field = class {
 
         this.relatedTalent = options.relatedTalent ?? "";
         this.talentsFactor;
-
         //外からこれらのプロパティを直接参照しないこと
     }
 
@@ -176,42 +175,50 @@ const Field = class {
     calc() {
         let calced = (() => {
             let base;
-            switch (this.type) {
-                case "normal":
-                    return calcAbility(this.base);
-                case "heal":
-                    return calcHeal(this.base);
-                case "constant":
-                    let arr = [];
-                    for (let i = 0; i < window.florr.rarity.length; i++) {
-                        arr.push(this.base + i * this.increase);
+            if (this.type == "unique") return this.uniqueDatas;
+
+            function correctToNum(num) { return (typeof num == "number") ? num : 0; } //Correct To Number
+
+            return (() => { //何があろうとNumber型を返す
+                try {
+                    switch (this.type) {
+                        case "normal":
+                            return calcAbility(correctToNum(this.base));
+                        case "heal":
+                            return calcHeal(correctToNum(this.base));
+                        case "constant":
+                            let arr = [];
+                            for (let i = 0; i < window.florr.rarity.length; i++) {
+                                arr.push(correctToNum(this.base + i * this.increase));
+                            }
+                            return arr;
+                        case "FplusF":
+                            base = this.baseField.getValueArr();
+                            return this.secondBaseField.getValueArr().map((e, i) => { return base[i] + e });
+                        case "FminusF":
+                            base = this.baseField.getValueArr();
+                            return this.secondBaseField.getValueArr().map((e, i) => { return base[i] - e });
+                        case "FtimesF":
+                            base = this.baseField.getValueArr();
+                            return this.secondBaseField.getValueArr().map((e, i) => { return base[i] * e });
+                        case "FoverF":
+                            base = this.baseField.getValueArr();
+                            return this.secondBaseField.getValueArr().map((e, i) => { return (base[i] / e) ?? 0 });
+                        case "FplusB":
+                            return this.baseField.getValueArr().map(e => { return e + this.base; });
+                        case "FtimesB":
+                            return this.baseField.getValueArr().map(e => { return e * this.base; });
+                        case "FFmax":
+                            return this.baseField.getValueArr().map(e => { return Math.max(e, base[i]) });
+                        case "FFmin":
+                            return this.baseField.getValueArr().map(e => { return Math.min(e, base[i]) });
+                        default:
+                            return [0, 0, 0, 0, 0, 0, 0, 0];
                     }
-                    return arr;
-                case "unique":
-                    return this.uniqueDatas;
-                case "FplusF":
-                    base = this.baseField.getValueArr();
-                    return this.secondBaseField.getValueArr().map((e, i) => { return base[i] + e });
-                case "FminusF":
-                    base = this.baseField.getValueArr();
-                    return this.secondBaseField.getValueArr().map((e, i) => { return base[i] - e });
-                case "FtimesF":
-                    base = this.baseField.getValueArr();
-                    return this.secondBaseField.getValueArr().map((e, i) => { return base[i] * e });
-                case "FoverF":
-                    base = this.baseField.getValueArr();
-                    return this.secondBaseField.getValueArr().map((e, i) => { return (base[i] / e) ?? 0 });
-                case "FplusB":
-                    return this.baseField.getValueArr().map(e => { return e + this.base; });
-                case "FtimesB":
-                    return this.baseField.getValueArr().map(e => { return e * this.base; });
-                case "FFmax":
-                    return this.baseField.getValueArr().map(e => { return Math.max(e, base[i]) });
-                case "FFmin":
-                    return this.baseField.getValueArr().map(e => { return Math.min(e, base[i]) });
-                default:
-                    return [0, 1, 2, 3, 4, 5, 6, 7];
-            }
+                } catch {
+                    return [0, 0, 0, 0, 0, 0, 0, 0];;
+                }
+            })().map(correctToNum);
         })();
 
         let returnArr = [];
@@ -236,7 +243,6 @@ const Field = class {
             }
             returnArr.push(value);
         }
-        console.log(returnArr);
         return returnArr;
     }
 
@@ -282,7 +288,7 @@ const Column = class {
     updateView() {
         let fix = v => {
             let vFixed;
-            switch(typeof v) {
+            switch (typeof v) {
                 case "number":
                     vFixed = v.toFixed(this.toFixed);
                     break;
