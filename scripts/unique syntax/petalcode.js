@@ -462,7 +462,7 @@ export const main = ($) => {
 
         //----- Field -----
         $.options.fieldOptions ??= {};
-        //レアリティ
+        //レアリティ(ユーザーに上書きされないField)
         fieldDict["petalRarity"] = new Field({
             "type": "constant",
             "base": 0,
@@ -580,6 +580,13 @@ export const main = ($) => {
             fieldDict["secondReload"] = new Field($.options.fieldOptions.secondReload ?? ropts);
         }
 
+        //リロード合計
+        fieldDict["reloadTimeSum"] = new Field($.options.fieldOptions.reloadTimeSum ?? {
+            "type": "FplusF",
+            "baseFieldId": "reloadTime",
+            "secondBaseFieldId": "secondReloadTime",
+        });
+
         //毒
         fieldDict["poison"] = new Field($.options.fieldOptions.poison ?? {
             "type": "normal",
@@ -628,7 +635,7 @@ export const main = ($) => {
             "viewType": petalCountIsHidden ? "normal" : "damage",
             "fieldId": "finalDamage",
             "secondFieldId": "singleDamage",
-            "isHidden": !$.options.baseDamage,
+            "isHidden": !$.options.fieldOptions.damage.base,
         }
 
         $.options.columnOptions.health ??= {
