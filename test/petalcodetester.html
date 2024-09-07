@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        * {
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div id="petalcode"></div>
+    </div>
+    <script type="module">
+
+        import { florr } from "./../scripts/data.js";
+        import { main as createPetalDataTable } from "./../scripts/unique syntax/petalcode.js";
+
+        addEventListener("DOMContentLoaded", () => {
+            //window.florrが全てのwikiスクリプトを内包
+            window.florr = florr;
+
+            createPetalDataTable(
+                {
+                    originId: "petalcode",
+                    options: {
+                        name: "Rose",
+                        baseHealth: 5,
+                        baseDamage: 5,
+                        reloadTime: 3.5,
+                        secondReloadTime: 1.5,
+                        basePoison: 5,
+                        poisonDuration: 3,
+                        leastRarity: 0,
+                        specialStatus: [
+                            {
+                                name: "回復量",
+                                id: "heal",
+                                type: "heal",
+                                last: "",
+                                base: 7.5
+                            },
+                            {
+                                id: "reloadTimeSum",
+                                type: "FplusF",
+                                baseFieldId: "reload",
+                                secondBaseFieldId: "secondReload",
+                                isHidden: true,
+                            },
+                            {
+                                name: "秒間回復量",
+                                id: "healPerSec",
+                                type: "FoverF",
+                                baseFieldId: "heal",
+                                secondBaseFieldId: "reloadTimeSum",
+                                last: "/s",
+                            },
+                            {
+                                name: "てきよう",
+                                type: "unique",
+                                uniqueDatas: ["あ", "い", "う", "え", "お", "か", 4, 3]
+                            }
+                        ]
+                    }
+                }
+            )
+        })
+    </script>
+</body>
+
+</html>
