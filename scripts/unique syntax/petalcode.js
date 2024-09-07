@@ -281,8 +281,18 @@ const Column = class {
 
     updateView() {
         let fix = v => {
-            if (typeof v !== "number") v = 0;
-            return this.first + v.toFixed(this.toFixed) + this.last;
+            let vFixed;
+            switch(typeof v) {
+                case "number":
+                    vFixed = v.toFixed(this.toFixed);
+                    break;
+                case "string":
+                    vFixed = v;
+                    break;
+                default:
+                    vFixed = 0;
+            }
+            return this.first + vFixed + this.last;
         }
 
         for (let rID = -1; rID < this.cellArr.length; rID++) {
