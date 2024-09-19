@@ -429,10 +429,12 @@ const buildFieldColumnRelation = function (fieldDict, columnArr) {
             column.secondField = fieldDict[column.secondFieldId];
         }
     });
+
 }
 
+const createStatusTable = function (fieldDict, columnArr) {
 
-
+}
 
 export const main = ($) => {
 
@@ -455,308 +457,362 @@ export const main = ($) => {
     });
 
     {//ステータスを生成
+
         const TBODY = document.createElement("tbody");
 
         let fieldDict = {};
         let columnArr = [];
 
-        //----- Field -----
-        $.options.fieldOptions ??= {};
-        //レアリティ(ユーザーに上書きされないField)
-        fieldDict["petalRarity"] = new Field({
-            "type": "constant",
-            "base": 0,
-            "increase": 1,
-        });
-
-        //petalCount(ユーザーに上書きされないField)
-        let petalCountIsHidden = !$.options.petalUniqueCounts && !($.options.petalCount && $.options.petalCount != 1);
+        //$.optionsからfieldDictとcolumnArrを生成
         {
-            let popts = {}
+            let specialColumnArr = []; //SpecialStatusのColumnと$.options.specialColumnArrの融合
 
-            if ($.options.petalUniqueCounts) {
-                popts = {
-                    "type": "unique",
-                    "uniqueDatas": $.options.petalUniqueCounts,
-                    "isHidden": true,
-                }
-            } else {
-                popts = {
-                    "type": "constant",
-                    "increase": 0,
-                    "base": $.options.petalCount ?? 1,
-                    "isHidden": true,
+            //specialStatusは、FieldとColumnの簡易指定版
+            //fieldOptionsは新しいFieldの追加に対応しない。isHiddenを使用することで、specialFieldArrとして扱うことができるようにする
+            //Fieldに新しいプロパティが追加されるたびにここを更新すること
+            //specialStatus
+            if ($.options.specialStatus) {
+
+                for (let i = 0; i < $.options.specialStatus.length; i++) {
+
+                    let opts = $.options.specialStatus[i];
+                    let Fopts, Copts;
+
+                    {
+                        //specialStatusのオプションを、fieldとcolumnに振り分ける。補完は行わない
+                        const convertSpecialStatusInto = function (options) {
+
+                            let Fopts = {};
+                            let Copts = {};
+
+                            //type
+                            switch (options.type) {
+                                case "rarity":
+                                    Fopts.type = "unique";
+                                    break;
+                                default:
+                                    Fopts.type = options.type;
+                            }
+
+                            switch (options.type) {
+                                case "rarity":
+                                    Copts.viewType = "rarity";
+                                    break;
+                                default:
+                                    Copts.viewType = "normal";
+                            }
+
+                            //other
+                            Fopts.base = options.base;
+                            Fopts.increase = options.increase;
+                            if (opts.type == "rarity") Fopts.uniqueDatas = options.uniqueDatas ?? options.uniqueRarityNumbers; //後方互換
+                            if (opts.type == "unique") Fopts.uniqueDatas = options.uniqueDatas;
+                            Fopts.baseFieldId = options.baseFieldId;
+                            Fopts.secondBaseFieldId = options.secondBaseFieldId;
+
+                            Copts.name = options.name;
+                            Copts.last = options.last;
+                            Copts.width = options.width;
+                            Copts.toFixed = options.toFixed ?? DEFAULT_TOFIXED_NUM;
+                            Copts.isHidden = options.isHidden ?? false;
+
+                            return { field: Fopts, column: Copts };
+                        }
+                        let converted = convertSpecialStatusInto(opts);
+                        Fopts = converted.field;
+                        Copts = converted.column;
+                    }
+
+                    //補完
+                    let id = opts.id ?? "special_" + i;
+                    if (Fopts.type == "heal") { //heal処理
+
+                        let secondId = id + "_2";
+                        let Fopts2 = {};
+                        Object.assign(Fopts2, Fopts)
+                        Fopts2.relatedTalent ??= "medic";
+                        fieldDict[secondId] = new Field(Fopts2);
+                        Fopts = {
+                            type: "FtimesF",
+                            baseFieldId: secondId,
+                            secondBaseFieldId: "petalCountChangeRatio",
+                        }
+                    }
+                    Copts.fieldId = id;
+
+                    fieldDict[id] = new Field(Fopts);
+                    if (!Copts.isHidden) specialColumnArr.push(new Column(Copts));
                 }
             }
-            fieldDict["petalCount"] = new Field(popts); //ユーザー入力値
 
-            let popts2 = {
-                "isHidden": petalCountIsHidden,
-                "relatedTalent": "duplicator",
-                "type": "FplusB",
+            if ($.options.specialColumnArr) { //超上級者向け
+                for (let i = 0; i < $.options.specialColumnArr.length; i++) {
+                    let opts = $.options.specialColumnArr[i];
+                    specialColumnArr.push(new Column(opts));
+                }
+            }
+
+            //この時点でspecialColumnArrが完成
+
+            let isFieldValid = {}; //そのフィールドが有効な値であるかどうか（表示するかどうかに関係する）。fieldDict設定時に検査して指定。
+
+            //----- FieldOptionsおよび基本オプションから、FieldDictを生成する -----
+
+            $.options.fieldOptions ??= {};
+
+            //レアリティ(ユーザーに上書きされないField)
+            fieldDict["petalRarity"] = new Field({
+                "type": "constant",
                 "base": 0,
-                "baseFieldId": "petalCount",
-            }
-            fieldDict["petalCount2"] = new Field(popts2); //Duplicatorの影響を受ける
-
-            let popts3 = {
-                "isHidden": true,
-                "type": "FoverF",
-                "baseFieldId": "petalCount2",
-                "secondBaseFieldId": "petalCount",
-            }
-            fieldDict["petalCountChangeRatio"] = new Field(popts3); //増加割合
-        }
-
-        //総攻撃力(基礎)
-        fieldDict["damage"] = new Field($.options.fieldOptions.damage ?? {
-            "type": "normal",
-            "base": $.options.baseDamage ?? 0,
-        });
-
-        //単体攻撃力
-        fieldDict["singleDamage"] = new Field($.options.fieldOptions.singleDamage ?? {
-            "type": "FoverF",
-            "baseFieldId": "damage",
-            "secondBaseFieldId": "petalCount",
-        });
-
-        //総攻撃力（最終）
-        fieldDict["finalDamage"] = new Field($.options.fieldOptions.finalDamage ?? {
-            "type": "FtimesF",
-            "baseFieldId": "damage",
-            "secondBaseFieldId": "petalCountChangeRatio",
-        });
-
-        //体力の和
-        fieldDict["healthSum"] = new Field($.options.fieldOptions.healthSum ?? {
-            "type": "normal",
-            "base": $.options.baseHealth ?? 0,
-        });
-
-        //体力
-        fieldDict["health"] = new Field($.options.fieldOptions.health ?? {
-            "type": "FoverF",
-            "baseFieldId": "healthSum",
-            "secondBaseFieldId": "petalCount",
-        });
-
-        //リロード
-        {
-            let ropts = {
-                "relatedTalent": "reload",
-            }
-            if ($.options.reloadUniqueTimes) {
-                Object.assign(ropts, {
-                    "type": "unique",
-                    "uniqueDatas": $.options.reloadUniqueTimes,
-                });
-            } else {
-                Object.assign(ropts, {
-                    "type": "constant",
-                    "base": $.options.reloadTime ?? 0,
-                    "increase": 0,
-                });
-            }
-            fieldDict["reload"] = new Field($.options.fieldOptions.reload ?? ropts)
-        }
-
-        //セカンドリロード
-        {
-            let ropts = {
-            }
-            if ($.options.secondReloadUniqueTimes) {
-                Object.assign(ropts, {
-                    "type": "unique",
-                    "uniqueDatas": $.options.secondReloadUniqueTimes,
-                })
-            } else {
-                Object.assign(ropts, {
-                    "type": "constant",
-                    "base": $.options.secondReloadTime ?? 0,
-                    "increase": 0,
-                })
-            }
-            fieldDict["secondReload"] = new Field($.options.fieldOptions.secondReload ?? ropts);
-        }
-
-        //リロード合計
-        fieldDict["reloadTimeSum"] = new Field($.options.fieldOptions.reloadTimeSum ?? {
-            "type": "FplusF",
-            "baseFieldId": "reloadTime",
-            "secondBaseFieldId": "secondReloadTime",
-        });
-
-        //毒
-        fieldDict["poison"] = new Field($.options.fieldOptions.poison ?? {
-            "type": "normal",
-            "base": $.options.basePoison ?? 0,
-            "relatedTalent": "poison",
-        });
-
-        //毒持続
-        fieldDict["poisonDuration"] = new Field($.options.fieldOptions.poisonDuration ?? {
-            "type": "constant",
-            "base": $.options.poisonDuration ?? 0,
-            "increase": 0,
-            "relatedTalent": "CPoison",
-        });
-
-        //毒秒間
-        fieldDict["poisonPerSec"] = new Field($.options.fieldOptions.poisonPerSec ?? {
-            "type": "FoverF",
-            "baseFieldId": "poison",
-            "secondBaseFieldId": "poisonDuration",
-            "isHidden": true,
-        });
-
-
-        //-----Column -----
-        $.options.columnOptions ??= {};
-
-        columnArr.push(new Column({
-            "name": "レアリティ",
-            "viewType": "rarity",
-            "fieldId": "petalRarity",
-            "width": 95,
-        }));
-
-        $.options.columnOptions.petalCount = {
-            "name": "ペタルの個数",
-            "viewType": "normal",
-            "toFixed": 0,
-            "last": "個",
-            "fieldId": "petalCount2",
-            "isHidden": petalCountIsHidden,
-        };
-
-        $.options.columnOptions.damage ??= {
-            "name": petalCountIsHidden ? "攻撃力" : "総攻撃力",
-            "viewType": petalCountIsHidden ? "normal" : "damage",
-            "fieldId": "finalDamage",
-            "secondFieldId": "singleDamage",
-            "isHidden": !$.options.fieldOptions.damage.base,
-        }
-
-        $.options.columnOptions.health ??= {
-            "name": "体力",
-            "viewType": "normal",
-            "fieldId": "health",
-            "isHidden": !$.options.baseHealth,
-        }
-
-        $.options.columnOptions.reload ??= {
-            "name": "再生時間",
-            "viewType": "reload",
-            "fieldId": "reload",
-            "secondFieldId": "secondReload",
-            "last": "s",
-            "isHidden": !($.options.reloadTime) && !($.options.reloadUniqueTimes),
-        }
-
-        $.options.columnOptions.poison ??= {
-            "name": "毒",
-            "viewType": "poison",
-            "fieldId": "poison",
-            "secondFieldId": "poisonDuration",
-            "isHidden": !$.options.basePoison,
-        }
-        {
-            let arr = ["petalCount", "damage", "health", "reload", "poison"];
-            arr.forEach(e => {
-                if (!$.options.columnOptions[e].isHidden) {
-                    columnArr.push(new Column($.options.columnOptions[e]));
-                }
+                "increase": 1,
             });
-        }
 
-        //specialStatusは、FieldとColumnの簡易指定版
-        //isHiddenを使用することで、specialFieldArrとして扱うことができるようにする
-        //Fieldに新しいプロパティが追加されるたびにここを更新すること
-        //specialStatus
-        if ($.options.specialStatus) {
+            //petalCount(現状ユーザーに上書きされないField)
+            {
+                let popts = {}
 
-            for (let i = 0; i < $.options.specialStatus.length; i++) {
-
-                let opts = $.options.specialStatus[i];
-                let Fopts, Copts;
-
-                {
-                    //specialStatusのオプションを、fieldとcolumnに振り分ける。補完は行わない
-                    const convertSpecialStatusInto = function (options) {
-
-                        let Fopts = {};
-                        let Copts = {};
-
-                        //type
-                        switch (options.type) {
-                            case "rarity":
-                                Fopts.type = "unique";
-                                break;
-                            default:
-                                Fopts.type = options.type;
-                        }
-
-                        switch (options.type) {
-                            case "rarity":
-                                Copts.viewType = "rarity";
-                                break;
-                            default:
-                                Copts.viewType = "normal";
-                        }
-
-                        //other
-                        Fopts.base = options.base;
-                        Fopts.increase = options.increase;
-                        if (opts.type == "rarity") Fopts.uniqueDatas = options.uniqueDatas ?? options.uniqueRarityNumbers; //後方互換
-                        if (opts.type == "unique") Fopts.uniqueDatas = options.uniqueDatas;
-                        Fopts.baseFieldId = options.baseFieldId;
-                        Fopts.secondBaseFieldId = options.secondBaseFieldId;
-
-                        Copts.name = options.name;
-                        Copts.last = options.last;
-                        Copts.width = options.width;
-                        Copts.toFixed = options.toFixed ?? DEFAULT_TOFIXED_NUM;
-                        Copts.isHidden = options.isHidden ?? false;
-
-                        return { field: Fopts, column: Copts };
+                if ($.options.petalUniqueCounts) {
+                    popts = {
+                        "type": "unique",
+                        "uniqueDatas": $.options.petalUniqueCounts,
+                        "isHidden": true,
                     }
-                    let converted = convertSpecialStatusInto(opts);
-                    Fopts = converted.field;
-                    Copts = converted.column;
-                }
-
-                //補完
-                let id = opts.id ?? "special_" + i;
-                if (Fopts.type == "heal") { //heal処理
-
-                    let secondId = id + "_2";
-                    let Fopts2 = {};
-                    Object.assign(Fopts2, Fopts)
-                    Fopts2.relatedTalent ??= "medic";
-                    fieldDict[secondId] = new Field(Fopts2);
-                    Fopts = {
-                        type: "FtimesF",
-                        baseFieldId: secondId,
-                        secondBaseFieldId: "petalCountChangeRatio",
+                } else {
+                    popts = {
+                        "type": "constant",
+                        "increase": 0,
+                        "base": $.options.petalCount ?? 1,
+                        "isHidden": true,
                     }
                 }
-                Copts.fieldId = id;
+                fieldDict["petalCount"] = new Field(popts); //ペタルの個数のユーザー入力値
 
-                fieldDict[id] = new Field(Fopts);
-                if (!Copts.isHidden) columnArr.push(new Column(Copts));
-            }
-        }
+                let popts2 = {
+                    "relatedTalent": "duplicator",
+                    "type": "FplusB",
+                    "base": 0,
+                    "baseFieldId": "petalCount",
+                }
+                fieldDict["petalCount2"] = new Field(popts2); //Duplicatorの影響を受ける
 
-        if ($.options.specialColumnArr) { //超上級者向け
-            for (let i = 0; i < $.options.specialColumnArr.length; i++) {
-                let opts = $.options.specialColumnArr[i];
-                columnArr.push(new Column(opts));
+                let popts3 = {
+                    "type": "FoverF",
+                    "baseFieldId": "petalCount2",
+                    "secondBaseFieldId": "petalCount",
+                }
+                fieldDict["petalCountChangeRatio"] = new Field(popts3); //増加割合　計算用
+
+                //uniqueCountsが定義されている、または、（petalcountがfalseでないかつ１でない）なら有効な値となる。
+                isFieldValid["petalCount"] = $.options.petalUniqueCounts || ($.options.petalCount && $.options.petalCount !== 1);
             }
+
+            //総攻撃力(基礎)
+            fieldDict["damage"] = new Field($.options.fieldOptions.damage ?? {
+                "type": "normal",
+                "base": $.options.baseDamage ?? 0,
+            });
+            //fieldOptionsが定義されている　または　baseDamageが有効な値
+            isFieldValid["damage"] = $.options.fieldOptions.damage || $.options.baseDamage;
+
+            //単体攻撃力
+            fieldDict["singleDamage"] = new Field($.options.fieldOptions.singleDamage ?? {
+                "type": "FoverF",
+                "baseFieldId": "damage",
+                "secondBaseFieldId": "petalCount",
+            });
+
+            //総攻撃力（最終）
+            fieldDict["finalDamage"] = new Field($.options.fieldOptions.finalDamage ?? {
+                "type": "FtimesF",
+                "baseFieldId": "damage",
+                "secondBaseFieldId": "petalCountChangeRatio",
+            });
+
+            //体力の和
+            fieldDict["healthSum"] = new Field($.options.fieldOptions.healthSum ?? {
+                "type": "normal",
+                "base": $.options.baseHealth ?? 0,
+            });
+            //fieldOptionsが定義されている　または　baseHealthが有効な値
+            isFieldValid["healthSum"] = $.options.fieldOptions.healthSum || $.options.baseHealth;
+
+            //体力
+            fieldDict["health"] = new Field($.options.fieldOptions.health ?? {
+                "type": "FoverF",
+                "baseFieldId": "healthSum",
+                "secondBaseFieldId": "petalCount",
+            });
+
+            //リロード
+            {
+                let ropts;
+                if ($.options.reloadUniqueTimes) {
+                    ropts = {
+                        "relatedTalent": "reload",
+                        "type": "unique",
+                        "uniqueDatas": $.options.reloadUniqueTimes,
+                    };
+                } else {
+                    ropts = {
+                        "relatedTalent": "reload",
+                        "type": "constant",
+                        "base": $.options.reloadTime ?? 0,
+                        "increase": 0,
+                    };
+                }
+                fieldDict["reload"] = new Field($.options.fieldOptions.reload ?? ropts)
+                //fieldOptionで定義済み　または　UniqueTimesがある　または　reloadTimeが有効な値
+                isFieldValid["reload"] = $.options.fieldOptions.reload || $.options.reloadUniqueTimes || $.options.reloadTime;
+            }
+
+            //セカンドリロード
+            {
+                let ropts;
+                if ($.options.secondReloadUniqueTimes) {
+                    ropts = {
+                        "type": "unique",
+                        "uniqueDatas": $.options.secondReloadUniqueTimes,
+                    }
+                } else {
+                    ropts = {
+                        "type": "constant",
+                        "base": $.options.secondReloadTime ?? 0,
+                        "increase": 0,
+                    }
+                }
+                fieldDict["secondReload"] = new Field($.options.fieldOptions.secondReload ?? ropts);
+                //fieldOptionで定義済み　または　UniqueTimesがある　または　reloadTimeが有効な値
+                isFieldValid["secondReload"] = $.options.fieldOptions.secondReload || $.options.secondReloadUniqueTimes || $.options.secondReloadTime;
+            }
+
+            //リロード合計
+            fieldDict["reloadSum"] = new Field($.options.fieldOptions.reloadSum ?? {
+                "type": "FplusF",
+                "baseFieldId": "reload",
+                "secondBaseFieldId": "secondReload",
+            });
+
+            //毒
+            fieldDict["poison"] = new Field($.options.fieldOptions.poison ?? {
+                "type": "normal",
+                "base": $.options.basePoison ?? 0,
+                "relatedTalent": "poison",
+            });
+            //fieldOptionsがある　または　basePoisonが有効な値
+            isFieldValid["poison"] = $.options.fieldOptions.poison || $.options.basePoison;
+
+            //毒持続
+            fieldDict["poisonDuration"] = new Field($.options.fieldOptions.poisonDuration ?? {
+                "type": "constant",
+                "base": $.options.poisonDuration ?? 0,
+                "increase": 0,
+                "relatedTalent": "CPoison",
+            });
+
+            //毒秒間
+            fieldDict["poisonPerSec"] = new Field($.options.fieldOptions.poisonPerSec ?? {
+                "type": "FoverF",
+                "baseFieldId": "poison",
+                "secondBaseFieldId": "poisonDuration",
+                "isHidden": true,
+            });
+
+            let petalCountIsHidden; //それぞれのColumnが表示されるかどうかを決定する
+            let damageIsHidden;
+            let healthIsHidden;
+            let reloadIsHidden;
+            let poisonIsHidden;
+
+            petalCountIsHidden = !(isFieldValid["petalCount"]);
+            damageIsHidden = !(isFieldValid["damage"]);
+            healthIsHidden = !(isFieldValid["healthSum"]);
+            reloadIsHidden = !(isFieldValid["reload"] || isFieldValid["secondReload"]);
+            poisonIsHidden = !(isFieldValid["poison"]);
+
+            //ここまで、入力オプションの仕様に依存
+            //これ以降、field系の入力されたオプションの使用を禁止
+
+            //-----ColumnArrを生成する -----
+            $.options.columnOptions ??= {}; //ユーザー指定可
+
+            columnArr.push(new Column({
+                "name": "レアリティ",
+                "viewType": "rarity",
+                "fieldId": "petalRarity",
+                "width": 95,
+            }));
+
+            $.options.columnOptions.petalCount = {
+                "name": "ペタルの個数",
+                "viewType": "normal",
+                "toFixed": 0,
+                "last": "個",
+                "fieldId": "petalCount2",
+                "isHidden": petalCountIsHidden,
+            };
+
+            $.options.columnOptions.damage ??= {
+                "name": petalCountIsHidden ? "攻撃力" : "総攻撃力",
+                "viewType": petalCountIsHidden ? "normal" : "damage",
+                "fieldId": "finalDamage",
+                "secondFieldId": "singleDamage",
+                "isHidden": damageIsHidden,
+            }
+
+            $.options.columnOptions.health ??= {
+                "name": "体力",
+                "viewType": "normal",
+                "fieldId": "health",
+                "isHidden": healthIsHidden,
+            }
+
+            $.options.columnOptions.reload ??= {
+                "name": "再生時間",
+                "viewType": "reload",
+                "fieldId": "reload",
+                "secondFieldId": "secondReload",
+                "last": "s",
+                "isHidden": reloadIsHidden,
+            }
+
+            $.options.columnOptions.poison ??= {
+                "name": "毒",
+                "viewType": "poison",
+                "fieldId": "poison",
+                "secondFieldId": "poisonDuration",
+                "isHidden": poisonIsHidden,
+            }
+
+            //これ以降、column系の入力されたoptionの使用を禁止
+
+            //columnOptionsからcolumnを生成してcolumnArrに統合する
+            {
+                let arr = ["petalCount", "damage", "health", "reload", "poison"];
+                arr.forEach(e => {
+                    if (!$.options.columnOptions[e].isHidden) {
+                        columnArr.push(new Column($.options.columnOptions[e]));
+                    }
+                });
+            }
+
+            //specialColumnArrをcolumnArrに統合する
+            if (specialColumnArr) {
+                for (let i = 0; i < specialColumnArr.length; i++) {
+                    let opts = specialColumnArr[i];
+                    columnArr.push(new Column(opts));
+                }
+            }
+
+
+            //この時点でfieldDictとcolumnArrが完成
         }
 
         //関係作成
         buildFieldColumnRelation(fieldDict, columnArr);
+
+        //アップデート系
+        fieldUpdator.setFieldDict(fieldDict);
+        wholeUpdator.setColumnArr(columnArr);
 
         //cell生成
         for (let rID = -1; rID < window.florr.rarity.length; rID++) {
@@ -774,9 +830,6 @@ export const main = ($) => {
             if (rID != -1 && rID < $.options.leastRarity) TR.style.display = "none";
         }
 
-        //アップデート系
-        fieldUpdator.setFieldDict(fieldDict);
-        wholeUpdator.setColumnArr(columnArr);
         wholeUpdator.updateWhole();
 
         TABLE.appendChild(TBODY);
