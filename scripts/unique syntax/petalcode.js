@@ -100,6 +100,11 @@ const calcDPSRange = (options, rarity) => {
     };
 }
 
+
+
+
+
+
 const setRarityCellStyleAndText = (cell, rID) => {
     Object.assign(cell.style, {
         textAlign: "center",
@@ -465,7 +470,7 @@ export const main = ($) => {
 
         //$.optionsからfieldDictとcolumnArrを生成
         {
-            let specialColumnArr = []; //SpecialStatusのColumnと$.options.specialColumnArrの融合
+            let specialColumnOptions = []; //SpecialStatusのColumnOptionと$.options.specialColumnArrの融合
 
             //specialStatusは、FieldとColumnの簡易指定版
             //fieldOptionsは新しいFieldの追加に対応しない。isHiddenを使用することで、specialFieldArrとして扱うことができるようにする
@@ -541,14 +546,14 @@ export const main = ($) => {
                     Copts.fieldId = id;
 
                     fieldDict[id] = new Field(Fopts);
-                    if (!Copts.isHidden) specialColumnArr.push(new Column(Copts));
+                    if (!Copts.isHidden) specialColumnOptions.push(Copts);
                 }
             }
 
             if ($.options.specialColumnArr) { //超上級者向け
                 for (let i = 0; i < $.options.specialColumnArr.length; i++) {
                     let opts = $.options.specialColumnArr[i];
-                    specialColumnArr.push(new Column(opts));
+                    specialColumnOptions.push(opts);
                 }
             }
 
@@ -735,12 +740,12 @@ export const main = ($) => {
             //-----ColumnArrを生成する -----
             $.options.columnOptions ??= {}; //ユーザー指定可
 
-            columnArr.push(new Column({
+            $.options.columnOptions.rarity = {
                 "name": "レアリティ",
                 "viewType": "rarity",
                 "fieldId": "petalRarity",
                 "width": 95,
-            }));
+            };
 
             $.options.columnOptions.petalCount = {
                 "name": "ペタルの個数",
@@ -787,22 +792,18 @@ export const main = ($) => {
 
             //columnOptionsからcolumnを生成してcolumnArrに統合する
             {
-                let arr = ["petalCount", "damage", "health", "reload", "poison"];
+                let arr = ["rarity", "petalCount", "damage", "health", "reload", "poison"];
                 arr.forEach(e => {
                     if (!$.options.columnOptions[e].isHidden) {
                         columnArr.push(new Column($.options.columnOptions[e]));
                     }
                 });
+                specialColumnOptions.forEach(opts => {
+                    if (!opts.isHidden) {
+                        columnArr.push(new Column(opts));
+                    }
+                })
             }
-
-            //specialColumnArrをcolumnArrに統合する
-            if (specialColumnArr) {
-                for (let i = 0; i < specialColumnArr.length; i++) {
-                    let opts = specialColumnArr[i];
-                    columnArr.push(new Column(opts));
-                }
-            }
-
 
             //この時点でfieldDictとcolumnArrが完成
         }
