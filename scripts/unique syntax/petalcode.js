@@ -585,54 +585,54 @@ const PulldownMenufyHost = class {
 
 
 
+const createFieldTable = function(fieldOptions, fieldTableOptions) {
 
-const createStatusTable = function (fieldOptions, columnOptionArr, statusTableOptions) {
+    const TALENTS_FACTOR = fieldTableOptions.TALENTS_FACTOR;
 
-    const TALENTS_FACTOR = new Talents(
-        TALENTS_FACTOR_DEFAULT.reload,
-        TALENTS_FACTOR_DEFAULT.medic,
-        TALENTS_FACTOR_DEFAULT.duplicator,
-        TALENTS_FACTOR_DEFAULT.poison,
-        TALENTS_FACTOR_DEFAULT.CPoison,
-    )
-
-    //FieldとColumnを生成
     const fieldDict = {};
-    const columnArr = [];
-
     for (const id in fieldOptions) {
         const option = fieldOptions[id];
         fieldDict[id] = new Field(option);
     }
 
-    columnOptionArr.forEach(opts => {
-        if (!opts.isHidden) {
-            columnArr.push(new Column(opts));
-        }
-    })
-
-
-
-    const leastRarity = statusTableOptions.leastRarity;
-
-    const TABLE = document.createElement("table");
-
     const fieldTable = new FieldTable();
 
-    const TBODY = document.createElement("tbody");
-
-    //ステータスを生成
-
-    //関係作成
-    columnArr.forEach(column => column.setFieldTable(fieldTable));
-
-    //アップデート系
     for (const id in fieldDict) {
         fieldTable.addNewField(id, fieldDict[id]);
     }
     fieldTable.forEachField(field => {
         field.setFuncToGetTalentsFactor(() => TALENTS_FACTOR);
     })
+
+    return fieldTable;
+}
+
+
+const createStatusTable = function (fieldOptions, columnOptionArr, statusTableOptions) {
+
+    const columnArr = [];
+    columnOptionArr.forEach(opts => {
+        if (!opts.isHidden) {
+            columnArr.push(new Column(opts));
+        }
+    })
+
+    const TALENTS_FACTOR = statusTableOptions.TALENTS_FACTOR;
+
+    const leastRarity = statusTableOptions.leastRarity;
+
+    const TABLE = document.createElement("table");
+
+    const TBODY = document.createElement("tbody");
+
+    //fieldTableを作成
+    const fieldTable = createFieldTable(fieldOptions, { "TALENTS_FACTOR": TALENTS_FACTOR });
+
+    //関係作成
+    columnArr.forEach(column => column.setFieldTable(fieldTable));
+
+    //アップデート系
+
     TABLE.updateWhole = function () {
         fieldTable.updateEveryField();
         columnArr.forEach(c => { c.updateView() });
@@ -666,6 +666,14 @@ const createStatusTable = function (fieldOptions, columnOptionArr, statusTableOp
 }
 
 export const main = ($) => {
+
+    const TALENTS_FACTOR = new Talents(
+        TALENTS_FACTOR_DEFAULT.reload,
+        TALENTS_FACTOR_DEFAULT.medic,
+        TALENTS_FACTOR_DEFAULT.duplicator,
+        TALENTS_FACTOR_DEFAULT.poison,
+        TALENTS_FACTOR_DEFAULT.CPoison,
+    )
 
     const finalFieldOptions = {};
     const finalColumnOptionArr = [];
@@ -1000,6 +1008,7 @@ export const main = ($) => {
 
     const TABLE = createStatusTable(finalFieldOptions, finalColumnOptionArr, {
         leastRarity: $.options.leastRarity,
+        TALENTS_FACTOR: TALENTS_FACTOR,
     });
 
     {//表を挿入
@@ -1129,7 +1138,7 @@ export const main = ($) => {
         }
         {//プルダウンメニュー化
             const updateTable = (talentName, v) => {
-                TABLE.setTalentsFactor(talentName, TALENTS_FACTOR_DEFAULT[talentName] + (TALENTS_VAL[talentName][v] ?? 0));
+                TALENTS_FACTOR[talentName] = TALENTS_FACTOR_DEFAULT[talentName] + (TALENTS_VAL[talentName][v] ?? 0);
                 TABLE.updateWhole();
             }
             pulldownMenufy(RELOAD, v => updateTable("reload", v));
