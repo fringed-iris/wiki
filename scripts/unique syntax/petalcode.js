@@ -583,8 +583,8 @@ const PulldownMenufyHost = class {
     }
 }
 
-
-
+//fieldTableを生成する
+//FieldとFieldTableに依存
 const createFieldTable = function(fieldOptions, fieldTableOptions) {
 
     const TALENTS_FACTOR = fieldTableOptions.TALENTS_FACTOR;
@@ -607,7 +607,9 @@ const createFieldTable = function(fieldOptions, fieldTableOptions) {
     return fieldTable;
 }
 
-
+//ステータステーブルを生成する
+//createFieldTableを使用
+//ColumnとfieldTableに依存
 const createStatusTable = function (fieldOptions, columnOptionArr, statusTableOptions) {
 
     const columnArr = [];
@@ -628,20 +630,16 @@ const createStatusTable = function (fieldOptions, columnOptionArr, statusTableOp
     //fieldTableを作成
     const fieldTable = createFieldTable(fieldOptions, { "TALENTS_FACTOR": TALENTS_FACTOR });
 
-    //関係作成
+    //ColumnがfieldTableを参照する
     columnArr.forEach(column => column.setFieldTable(fieldTable));
 
-    //アップデート系
-
+    //アップデートをする
     TABLE.updateWhole = function () {
         fieldTable.updateEveryField();
         columnArr.forEach(c => { c.updateView() });
     }
-    TABLE.setTalentsFactor = function(talentName, value) {
-        TALENTS_FACTOR[talentName] = value;
-    }
 
-    //cell生成
+    //cell生成、Columnに登録
     for (let rID = -1; rID < window.florr.rarity.length; rID++) {
         const TR = TBODY.insertRow();
         for (let j = 0; j < columnArr.length; j++) {
