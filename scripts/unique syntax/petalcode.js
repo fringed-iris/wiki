@@ -610,10 +610,10 @@ const createFieldTable = function(fieldOptions, fieldTableOptions) {
 //ステータステーブルを生成する
 //createFieldTableを使用
 //ColumnとfieldTableに依存
-const createStatusTable = function (fieldOptions, columnOptionArr, statusTableOptions) {
+const createStatusTable = function (fieldOptions, columnOptionsArr, statusTableOptions) {
 
     const columnArr = [];
-    columnOptionArr.forEach(opts => {
+    columnOptionsArr.forEach(opts => {
         if (!opts.isHidden) {
             columnArr.push(new Column(opts));
         }
@@ -674,11 +674,11 @@ export const main = ($) => {
     )
 
     const finalFieldOptions = {};
-    const finalColumnOptionArr = [];
+    const finalColumnOptionsArr = [];
 
     //$.optionsからfieldOptionsとcolumnOptionsを生成
     {
-        let specialColumnOptionArr = []; //SpecialStatusのColumnOptionと$.options.specialColumnArrの融合
+        let specialColumnOptionsArr = []; //SpecialStatusのColumnOptionと$.options.specialColumnArrの融合
         let specialFieldOptions = {};
 
         //specialStatusは、FieldとColumnの簡易指定版
@@ -756,11 +756,11 @@ export const main = ($) => {
                 Copts.fieldId = id;
 
                 specialFieldOptions[id] = Fopts;
-                if (!Copts.isHidden) specialColumnOptionArr.push(Copts);
+                if (!Copts.isHidden) specialColumnOptionsArr.push(Copts);
             }
         }
 
-        //この時点でspecialFieldOptionsとspecialColumnOptionArrが完成
+        //この時点でspecialFieldOptionsとspecialColumnOptionsArrが完成
 
         let isFieldValid = {}; //そのフィールドが有効な値であるかどうか（表示するかどうかに関係する）。fieldDict設定時に検査して指定。
 
@@ -991,7 +991,7 @@ export const main = ($) => {
             "isHidden": poisonIsHidden,
         }
 
-        //この時点で、specialFieldOptions, $.options.fieldOptions, specialColumnOptionArr, $.options.columnOptionsの４つが完成している
+        //この時点で、specialFieldOptions, $.options.fieldOptions, specialColumnOptionsArr, $.options.columnOptionsの４つが完成している
 
         //統合
         Object.assign(finalFieldOptions, $.options.fieldOptions);
@@ -999,12 +999,12 @@ export const main = ($) => {
         Object.assign(finalFieldOptions, specialFieldOptions);
 
         let arr = ["rarity", "petalCount", "damage", "health", "reload", "poison"];
-        arr.forEach(id => finalColumnOptionArr.push($.options.columnOptions[id]));
+        arr.forEach(id => finalColumnOptionsArr.push($.options.columnOptions[id]));
 
-        specialColumnOptionArr.forEach(opt => finalColumnOptionArr.push(opt));
+        specialColumnOptionsArr.forEach(opt => finalColumnOptionsArr.push(opt));
     }
 
-    const TABLE = createStatusTable(finalFieldOptions, finalColumnOptionArr, {
+    const TABLE = createStatusTable(finalFieldOptions, finalColumnOptionsArr, {
         leastRarity: $.options.leastRarity,
         TALENTS_FACTOR: TALENTS_FACTOR,
     });
