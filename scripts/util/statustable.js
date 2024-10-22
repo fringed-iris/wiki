@@ -291,7 +291,7 @@ const FieldTable = class {
         baseFieldIdArr.forEach(baseFieldId => {
             const baseField = this.#fieldDict[baseFieldId];
             if (this.#fieldUpdateIdDict[baseFieldId] !== this.#updateId) {
-                this.#updateOneField(baseField);
+                this.#updateOneField(baseField, baseFieldId);
             }
         })
 
