@@ -728,7 +728,7 @@ export const main = ($) => {
                         Copts.last = options.last;
                         Copts.first = options.first;
                         Copts.width = options.width;
-                        Copts.toFixed = options.toFixed ?? DEFAULT_TOFIXED_NUM;
+                        Copts.toFixed = options.toFixed;
                         Copts.isHidden = options.isHidden ?? false;
 
                         return { field: Fopts, column: Copts };
