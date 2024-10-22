@@ -375,7 +375,7 @@ const Column = class {
                 cell = this.headCell;
 
                 if (this.viewType == "damage") cell.innerHTML = this.name + "<br>(単体での値)"
-                else if (this.viewType == "poison") cell.innerHTML = this.name + "<br>(秒間毒)"
+                else if (this.viewType == "poison") cell.innerHTML = this.name + "<br>(秒間値)"
                 else cell.textContent = this.name;
                 cell.style.fontWeight = "bold";
 
