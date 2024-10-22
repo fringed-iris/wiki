@@ -1,40 +1,45 @@
 export const options = {
-    name: "Dahlia",
-    petalCount: 3,
-    baseHealth: 5,
-    baseDamage: 5,
+    name: "Cotton",
+    baseHealth: 6,
     reloadTime: 1.5,
-    secondReloadTime: 1.5,
-    calcDPS: false,
-    leastRarity: 1,
-    specialStatus: [
-        {
-            id: "healpoint",
+    leastRarity: 0,
+
+    fieldOptions: {
+        healthSum: {
             type: "heal",
-            last: "",
-            base: 1.25,
-            isHidden: true,
+            base: 6,
         },
-        {
-            id: "reloadTimeSum",
-            type: "FplusF",
-            baseFieldId: "reload",
-            secondBaseFieldId: "secondReload",
-            isHidden: true,
-        },
-        {
-            id: "totalheal",
-            name: "総回復",
-            type: "FtimesF",
-            baseFieldId: "healpoint",
-            secondBaseFieldId: "petalCount"
-        },
-        {
-            name: "秒間回復",
+
+        healthPerSec: {
             type: "FoverF",
-            baseFieldId: "totalheal",
-            secondBaseFieldId: "reloadTimeSum",
+            baseFieldId: "healthSum",
+            secondBaseFieldId: "reload",
+        },
+
+        reloadPlus: {
+            type: "FplusB",
+            base: 1,
+            baseFieldId: "reload",
+        },
+
+        healthPerSecPlus: {
+            type: "FoverF",
+            baseFieldId: "healthSum",
+            secondBaseFieldId: "reloadPlus",
+        }
+    },
+
+    specialColumnOptionsArr: [
+        {
+            fieldId: "healthPerSec",
+            name: "秒間吸収量理論値",
             last: "/s",
         },
+        {
+            fieldId: "healthPerSecPlus",
+            width: 100,
+            name: "消費に1秒かかる場合の秒間吸収量",
+            last: "/s",
+        }
     ]
 };

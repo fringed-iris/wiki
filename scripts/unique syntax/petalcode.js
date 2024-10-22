@@ -101,6 +101,8 @@ export const main = ($) => {
             }
         }
 
+        $.options.specialColumnOptionsArr && $.options.specialColumnOptionsArr.forEach(opts => specialColumnOptionsArr.push(opts));
+
         //この時点でspecialFieldOptionsとspecialColumnOptionsArrが完成
 
         let isFieldValid = {}; //そのフィールドが有効な値であるかどうか（表示するかどうかに関係する）。fieldDict設定時に検査して指定。
