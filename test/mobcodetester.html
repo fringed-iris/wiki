@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        * {
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div id="mobcode"></div>
+    </div>
+    <script type="module">
+
+        import { florr } from "./../scripts/data.js";
+        import { main as createMobDataTable } from "./../scripts/unique syntax/mobcode.js";
+        import { mobStatusOptions } from "./petalcodetesterData.js";
+
+        addEventListener("DOMContentLoaded", () => {
+            //window.florrが全てのwikiスクリプトを内包
+            window.florr = florr;
+
+            createMobDataTable(
+                {
+                    originId: "mobcode",
+                    options: mobStatusOptions ?? {
+                        name: "Test",
+                        baseHealth: 10,
+                        baseDamage: 10,
+                        leastRarity: 1,
+                    },
+                }
+            )
+        })
+    </script>
+</body>
+
+</html>

@@ -1,153 +1,245 @@
 /* ----------
-mobcode 
-
-ver.1.6
+mobcode (statustable ver4.3)
 ---------- */
 
-const RARITY_LEN = Object.keys(window.florr.rarity.id).length;
+import { createStatusTable, PulldownMenufyHost, Talents, TALENTS_FACTOR_DEFAULT, TALENTS_VAL } from "./../util/statustable.js"
 
-const calcAbility = function (baseAbility, type) {
-    const TABLE = {}
+export const main = ($) => {
 
-    for (let id = 0; id <= (RARITY_LEN / 2 - 1); id++) {
-        let factor;
+    const TALENTS_FACTOR = new Talents(
+        TALENTS_FACTOR_DEFAULT.reload,
+        TALENTS_FACTOR_DEFAULT.medic,
+        TALENTS_FACTOR_DEFAULT.duplicator,
+        TALENTS_FACTOR_DEFAULT.poison,
+        TALENTS_FACTOR_DEFAULT.CPoison,
+    )
 
-        if (type === "health") {
-            factor = window.florr.database.mobHealthFactor[id];
-        } else {
-            factor = (3 ** id);
+    const finalFieldOptions = {};
+    const finalColumnOptionsArr = [];
+
+    //$.optionsからfieldOptionsとcolumnOptionsを生成
+    {
+        let specialColumnOptionsArr = []; //SpecialStatusのColumnOptionと$.options.specialColumnArrの融合
+        let specialFieldOptions = {};
+
+        //specialStatusは、FieldとColumnの簡易指定版
+        //fieldOptionsは新しいFieldの追加に対応している。とはいえ、isHiddenを使用することで、fieldOptionsとして扱うことができるようにする。
+        //Fieldに新しいプロパティが追加されるたびにここを更新すること
+        //specialStatus
+        if ($.options.specialStatus) {
+
+            for (let i = 0; i < $.options.specialStatus.length; i++) {
+
+                let opts = $.options.specialStatus[i];
+                let Fopts, Copts;
+
+                {
+                    //specialStatusのオプションを、fieldとcolumnに振り分ける。補完は行わない
+                    const convertSpecialStatusInto = function (options) {
+
+                        let Fopts = {};
+                        let Copts = {};
+
+                        //type
+                        switch (options.type) {
+                            case "rarity":
+                                Fopts.type = "unique";
+                                break;
+                            default:
+                                Fopts.type = options.type;
+                        }
+
+                        switch (options.type) {
+                            case "rarity":
+                                Copts.viewType = "rarity";
+                                break;
+                            default:
+                                Copts.viewType = "normal";
+                        }
+
+                        //other
+                        Fopts.base = options.base;
+                        Fopts.increase = options.increase;
+                        if (opts.type == "rarity") Fopts.uniqueDatas = options.uniqueDatas ?? options.uniqueRarityNumbers; //後方互換
+                        if (opts.type == "unique") Fopts.uniqueDatas = options.uniqueDatas;
+                        Fopts.baseFieldId = options.baseFieldId;
+                        Fopts.secondBaseFieldId = options.secondBaseFieldId;
+
+                        Copts.name = options.name;
+                        Copts.last = options.last;
+                        Copts.first = options.first;
+                        Copts.width = options.width;
+                        Copts.toFixed = options.toFixed;
+                        Copts.isHidden = options.isHidden ?? false;
+
+                        return { field: Fopts, column: Copts };
+                    }
+                    let converted = convertSpecialStatusInto(opts);
+                    Fopts = converted.field;
+                    Copts = converted.column;
+                }
+
+                //補完
+                let id = opts.id ?? "special_" + i;
+                Copts.fieldId = id;
+
+                specialFieldOptions[id] = Fopts;
+                if (!Copts.isHidden) specialColumnOptionsArr.push(Copts);
+            }
         }
 
-        const AMOUNT = (baseAbility * factor);
-        TABLE[id] = AMOUNT;
+        //この時点でspecialFieldOptionsとspecialColumnOptionsArrが完成
+
+        let isFieldValid = {}; //そのフィールドが有効な値であるかどうか（表示するかどうかに関係する）。fieldDict設定時に検査して指定。
+
+        //----- fieldOptionsおよび基本オプションから、FieldDictを生成する -----
+
+        $.options.fieldOptions ??= {};
+
+        //レアリティ。ユーザーに上書きされない。
+        $.options.fieldOptions["rarity"] = {
+            "type": "constant",
+            "base": 0,
+            "increase": 1,
+        };
+
+        //攻撃力
+        $.options.fieldOptions["damage"] ??= {
+            "type": "normal",
+            "base": $.options.baseDamage ?? 0,
+        };
+        //baseが有効な値
+        isFieldValid["damage"] = $.options.fieldOptions.damage.base;
+
+        //体力
+        $.options.fieldOptions["health"] ??= {
+            "type": "Mhealth",
+            "base": $.options.baseHealth ?? 0,
+        };
+        //baseが有効な値
+        isFieldValid["health"] = $.options.fieldOptions.health.base;
+
+        //アーマー
+        $.options.fieldOptions["defaultArmor"] ??= {
+            "type": "Marmor",
+            "base": window.florr.database.defaultArmor,
+        }
+
+        $.options.fieldOptions["uniqueArmor"] ??= {
+            "type": "normal",
+            "base": $.options.baseArmor ?? 0,
+        }
+
+        $.options.fieldOptions["finalArmor"] ??= {
+            "type": "FplusF",
+            "baseFieldId": "defaultArmor",
+            "secondBaseFieldId": "uniqueArmor",
+        }
+
+        //毒
+        $.options.fieldOptions["poison"] ??= {
+            "type": "normal",
+            "base": $.options.basePoison ?? 0,
+            "relatedTalent": "poison",
+        };
+        //baseが有効な値
+        isFieldValid["poison"] = $.options.fieldOptions.poison.base;
+
+        //毒持続
+        $.options.fieldOptions["poisonDuration"] ??= {
+            "type": "constant",
+            "base": $.options.poisonDuration ?? 0,
+            "increase": 0,
+            "relatedTalent": "CPoison",
+        };
+
+        //毒秒間
+        $.options.fieldOptions["poisonPerSec"] ??= {
+            "type": "FoverF",
+            "baseFieldId": "poison",
+            "secondBaseFieldId": "poisonDuration",
+            "isHidden": true,
+        };
+
+        let damageIsHidden;
+        let healthIsHidden;
+        let poisonIsHidden;
+
+        damageIsHidden = !(isFieldValid["damage"]);
+        healthIsHidden = !(isFieldValid["health"]);
+        poisonIsHidden = !(isFieldValid["poison"]);
+
+        //ここまで、入力オプションの仕様に依存
+        //これ以降、field系の入力されたオプションの使用を禁止
+
+        //-----ColumnArrを生成する -----
+        $.options.columnOptions ??= {}; //ユーザー指定可
+
+        $.options.columnOptions.rarity = {
+            "name": "レアリティ",
+            "viewType": "rarity",
+            "fieldId": "rarity",
+            "width": 95,
+        };
+
+        $.options.columnOptions.damage ??= {
+            "name": "攻撃力",
+            "viewType": "normal",
+            "fieldId": "damage",
+            "isHidden": damageIsHidden,
+        }
+
+        $.options.columnOptions.armor ??= {
+            "name": "アーマー値",
+            "viewType": "normal",
+            "fieldId": "finalArmor",
+        }
+
+        $.options.columnOptions.health ??= {
+            "name": "体力",
+            "viewType": "normal",
+            "fieldId": "health",
+            "isHidden": healthIsHidden,
+        }
+
+        $.options.columnOptions.poison ??= {
+            "name": "毒",
+            "viewType": "poison",
+            "fieldId": "poison",
+            "secondFieldId": "poisonDuration",
+            "isHidden": poisonIsHidden,
+        }
+
+        //この時点で、specialFieldOptions, $.options.fieldOptions, specialColumnOptionsArr, $.options.columnOptionsの４つが完成している
+
+        //統合
+        Object.assign(finalFieldOptions, $.options.fieldOptions);
+
+        Object.assign(finalFieldOptions, specialFieldOptions);
+
+        let arr = ["rarity", "damage", "health", "armor", "poison"];
+        arr.forEach(id => finalColumnOptionsArr.push($.options.columnOptions[id]));
+
+        specialColumnOptionsArr.forEach(opt => finalColumnOptionsArr.push(opt));
     }
 
-    return TABLE;
-}
-export const main = function ($) {
-    const TABLE = document.createElement("table");
-    {
+    const TABLE = createStatusTable(finalFieldOptions, finalColumnOptionsArr, {
+        leastRarity: $.options.leastRarity,
+        TALENTS_FACTOR: TALENTS_FACTOR,
+    });
+
+    {//表を挿入
         const DIV = document.getElementById($.originId).parentNode;
         DIV.parentNode.insertBefore(TABLE, DIV);
+        {
+            const P = document.createElement("p");
+            P.innerText = "このステータスは自動生成されています。詳しくは";
+            const A = document.createElement("a");
+            A.innerText = "こちら";
+            A.href = "/wiki/特殊構文について";
 
-        let text = document.createElement("p");
-        text.innerText = "このステータスは自動生成されています。";
-
-        DIV.parentNode.insertBefore(text, DIV.nextSibling);
-    }
-
-    const TBODY = TABLE.createTBody();
-
-    for (let rarityID = -1; rarityID < RARITY_LEN / 2; rarityID++) {
-        if (
-            (rarityID !== -1 && rarityID < $.options.leastRarity)
-            || $.options.maxRarity < rarityID
-        ) continue;
-
-        const TR = TBODY.insertRow();
-
-        const RARITY_OPTS = {};
-        if (-1 < rarityID) {
-            RARITY_OPTS.health = calcAbility($.options.baseHealth, "health")[rarityID];
-            RARITY_OPTS.damage = calcAbility($.options.baseDamage)[rarityID];
-            if ($.options.baseMaxHealth) RARITY_OPTS.maxHealth = calcAbility($.options.baseMaxHealth, "health")[rarityID];
-            RARITY_OPTS.special = $.options.specialStatus.map(e => {
-                if (e.type == "health") return calcAbility(e.base, "health")[rarityID];
-                return calcAbility(e.base)[rarityID];
-            });
-            RARITY_OPTS.armor =
-                calcAbility(window.florr.database.defaultArmor)[Math.min(rarityID, 6)]
-                + ($.options.baseArmor ? calcAbility($.options.baseArmor)[rarityID] : 0);
-        }
-
-        {//レアリティのセル
-            if (rarityID === -1) {
-                const TH = document.createElement("th");
-                TH.innerText = "レアリティ";
-
-                TR.appendChild(TH);
-            } else {
-                const TD = TR.insertCell();
-                TD.style.textAlign = "center";
-                TD.style.backgroundColor = window.florr.rarity.color.background[window.florr.rarity.id[rarityID]];
-                TD.style.color = window.florr.rarity.color.text[window.florr.rarity.id[rarityID]];
-                TD.innerText = window.florr.rarity.name[window.florr.rarity.id[rarityID]];
-            }
-        }
-        {//攻撃力のセル
-            if (rarityID === -1) {
-                const TH = document.createElement("th");
-                TH.innerText = "攻撃力";
-                TH.style.width = "85px";
-
-                TR.appendChild(TH);
-            } else {
-                const TD = TR.insertCell();
-                TD.style.textAlign = "center";
-                TD.innerText = String(RARITY_OPTS.damage);
-            }
-        }
-        {//体力のセル
-            if (rarityID === -1) {
-                const TH = document.createElement("th");
-                TH.innerText = "体力";
-                TH.style.width = $.options.baseMaxHealth
-                    ? "170px"
-                    : "85px";
-
-                TR.appendChild(TH);
-            } else {
-                const TD = TR.insertCell();
-                TD.style.textAlign = "center";
-                TD.innerText = String(RARITY_OPTS.health);
-                if ($.options.baseMaxHealth) TD.innerText += `~${String(RARITY_OPTS.maxHealth)}`;
-            }
-        }
-        {//アーマーのセル
-            if (rarityID === -1) {
-                const TH = document.createElement("th");
-                TH.innerText = "アーマー";
-                TH.style.width = "85px";
-
-                TR.appendChild(TH);
-            } else {
-                const TD = TR.insertCell();
-                TD.style.textAlign = "center";
-                TD.innerText = String(Math.round(RARITY_OPTS.armor));
-            }
-        }
-        for (let i = 0; i < $.options.specialStatus.length; i++) {//その他カスタムプロパティ
-            const STATUS = $.options.specialStatus[i];
-            STATUS.last
-
-            if (rarityID === -1) {
-                const TH = document.createElement("th");
-                TH.innerText = STATUS.name;
-                TH.style.width = STATUS.width
-                    ? `${STATUS.width}px`
-                    : "85px";
-
-                TR.appendChild(TH);
-            } else {
-                const TD = TR.insertCell();
-
-                switch (STATUS.type) {
-                    case "normal":
-                        TD.innerText = RARITY_OPTS.special[i] + "" + STATUS.last;
-                        break;
-                    case "health":
-                        TD.innerText = RARITY_OPTS.special[i] + "" + STATUS.last;
-                        break;
-                    case "constant":
-                        TD.innerText = STATUS.base + STATUS.increase * rarityID + "" + STATUS.last;
-                        break;
-                    case "unique":
-                        TD.innerText = STATUS.uniqueDatas[rarityID];
-                        break;
-
-                    default: break;
-                }
-            }
+            P.appendChild(A);
+            DIV.appendChild(P);
         }
     }
 }
