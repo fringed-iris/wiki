@@ -67,6 +67,40 @@ const calcHeal = baseAbility => {
     return TABLE;
 }
 
+const calcDefaultMobArmor = baseAbility => {
+    const TABLE = new Array(window.florr.rarity.length);
+
+    for (let id = 0; id <= (window.florr.rarity.length - 1); id++) {
+        let factor = 3 ** id;
+        switch (id) {
+            case 7:
+                factor = factor / 3;
+                break;
+
+            default: break;
+        }
+
+        const AMOUNT = (baseAbility * factor);
+        TABLE[id] = AMOUNT;
+    }
+
+    return TABLE;
+}
+
+const calcMobHealth = baseAbility => {
+
+    const TABLE = new Array(window.florr.rarity.length);
+
+    for (let id = 0; id <= (window.florr.rarity.length - 1); id++) {
+        let factor = window.florr.database.mobHealthFactor[id];
+
+        const AMOUNT = (baseAbility * factor);
+        TABLE[id] = AMOUNT;
+    }
+
+    return TABLE;
+}
+
 const calcDPS = options => {
     let damageAmount =
         Math.ceil(options.petal.health / options.mob.damage)   //モブに衝突可能な最大回数
@@ -177,6 +211,10 @@ const Field = class {
                             return calcAbility(correctToNum(this.base));
                         case "heal":
                             return calcHeal(correctToNum(this.base));
+                        case "Mhealth":
+                            return calcMobHealth(correctToNum(this.base));
+                        case "Marmor":
+                            return calcDefaultMobArmor(correctToNum(this.base));
                         case "constant":
                             let arr = [];
                             for (let i = 0; i < window.florr.rarity.length; i++) {
