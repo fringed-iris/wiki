@@ -17,7 +17,7 @@
 
         import { florr } from "./../scripts/data.js";
         import { main as createPetalDataTable } from "./../scripts/unique syntax/petalcode.js";
-        import { options } from "./petalcodetesterData.js";
+        import { petalStatusOptions } from "./petalcodetesterData.js";
 
         addEventListener("DOMContentLoaded", () => {
             //window.florrが全てのwikiスクリプトを内包
@@ -26,7 +26,7 @@
             createPetalDataTable(
                 {
                     originId: "petalcode",
-                    options: options,
+                    options: petalStatusOptions,
                 }
             )
         })
