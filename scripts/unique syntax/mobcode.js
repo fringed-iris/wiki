@@ -119,6 +119,12 @@ export const main = ($) => {
         //baseが有効な値
         isFieldValid["health"] = $.options.fieldOptions.health.base;
 
+        $.options.fieldOptions["maxHealth"] ??= {
+            "type": "health",
+            "base": $.options.baseMaxHealth ?? 0,
+        }
+        isFieldValid["maxHealth"] = $.options.fieldOptions.maxHealth.base;
+
         //アーマー
         $.options.fieldOptions["defaultArmor"] ??= {
             "type": "armor",
@@ -164,9 +170,11 @@ export const main = ($) => {
         let damageIsHidden;
         let healthIsHidden;
         let poisonIsHidden;
+        let maxHealthIsHidden;
 
         damageIsHidden = !(isFieldValid["damage"]);
         healthIsHidden = !(isFieldValid["health"]);
+        maxHealthIsHidden = !(isFieldValid["maxHealth"]);
         poisonIsHidden = !(isFieldValid["poison"]);
 
         //ここまで、入力オプションの仕様に依存
@@ -197,8 +205,9 @@ export const main = ($) => {
 
         $.options.columnOptions.health ??= {
             "name": "体力",
-            "viewType": "normal",
+            "viewType": maxHealthIsHidden ? "normal" : "minAndMax",
             "fieldId": "health",
+            "secondFieldId": "maxHealth",
             "isHidden": healthIsHidden,
         }
 

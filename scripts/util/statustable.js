@@ -442,6 +442,10 @@ const Column = class {
                 if (this.viewType == "poison") {
                     if (v2) cell.innerHTML = cell.textContent + "<br>(" + fix(v1 / v2) + "/s)";
                 }
+
+                if (this.viewType == "minAndMax") {
+                    if (v2) cell.innerHTML = cell.textContent + "<br>~" + fix(v2);
+                }
             }
 
             //style
