@@ -113,7 +113,7 @@ export const main = ($) => {
 
         //体力
         $.options.fieldOptions["health"] ??= {
-            "type": "Mhealth",
+            "type": "health",
             "base": $.options.baseHealth ?? 0,
         };
         //baseが有効な値
@@ -121,7 +121,7 @@ export const main = ($) => {
 
         //アーマー
         $.options.fieldOptions["defaultArmor"] ??= {
-            "type": "Marmor",
+            "type": "armor",
             "base": window.florr.database.defaultArmor,
         }
 

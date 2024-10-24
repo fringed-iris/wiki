@@ -211,9 +211,9 @@ const Field = class {
                             return calcAbility(correctToNum(this.base));
                         case "heal":
                             return calcHeal(correctToNum(this.base));
-                        case "Mhealth":
+                        case "health":
                             return calcMobHealth(correctToNum(this.base));
-                        case "Marmor":
+                        case "armor":
                             return calcDefaultMobArmor(correctToNum(this.base));
                         case "constant":
                             let arr = [];
