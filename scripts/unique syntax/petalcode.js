@@ -157,13 +157,13 @@ export const main = ($) => {
             isFieldValid["petalCount"] = $.options.petalUniqueCounts || ($.options.petalCount && $.options.petalCount !== 1);
         }
 
+        isFieldValid["damage"] = !!($.options.fieldOptions.damage ||  $.options.baseDamage);
+
         //総攻撃力(基礎)
         $.options.fieldOptions["damage"] ??= {
             "type": "normal",
             "base": $.options.baseDamage ?? 0,
         };
-        //baseが有効な値
-        isFieldValid["damage"] = $.options.fieldOptions.damage.base;
 
         //単体攻撃力
         $.options.fieldOptions["singleDamage"] ??= {
@@ -179,13 +179,13 @@ export const main = ($) => {
             "secondBaseFieldId": "petalCountChangeRatio",
         };
 
+        isFieldValid["healthSum"] = !!($.options.fieldOptions.healthSum ||  $.options.baseHealth);
+
         //体力の和
         $.options.fieldOptions["healthSum"] ??= {
             "type": "normal",
             "base": $.options.baseHealth ?? 0,
         };
-        //baseが有効な値
-        isFieldValid["healthSum"] = $.options.fieldOptions.healthSum.base;
 
         //体力
         $.options.fieldOptions["health"] ??= {
@@ -196,6 +196,8 @@ export const main = ($) => {
 
         //リロード
         {
+            isFieldValid["reload"] = !!($.options.fieldOptions.reload || $.options.reloadUniqueTimes || $.options.reloadTime);
+
             let ropts;
             if ($.options.reloadUniqueTimes) {
                 ropts = {
@@ -212,12 +214,12 @@ export const main = ($) => {
                 };
             }
             $.options.fieldOptions["reload"] ??= ropts
-            //uniqueDatasまたはbaseが有効な値
-            isFieldValid["reload"] = !!($.options.fieldOptions.reload.uniqueDatas) || !!($.options.fieldOptions.reload.base);
         }
 
         //セカンドリロード
         {
+            isFieldValid["secondReload"] = !!($.options.fieldOptions.secondReload || $.options.secondReloadUniqueTimes || $.options.secondReloadTime);
+
             let ropts;
             if ($.options.secondReloadUniqueTimes) {
                 ropts = {
@@ -232,8 +234,6 @@ export const main = ($) => {
                 }
             }
             $.options.fieldOptions["secondReload"] ??= ropts;
-            //UniqueDatasがある　または　baseが有効な値
-            isFieldValid["secondReload"] = !!($.options.fieldOptions.secondReload.uniqueDatas) || !!($.options.fieldOptions.secondReload.base);
         }
 
         //リロード合計
@@ -243,14 +243,13 @@ export const main = ($) => {
             "secondBaseFieldId": "secondReload",
         };
 
+        isFieldValid["poison"] = !!($.options.fieldOptions.poison || $.options.basePoison);
         //毒
         $.options.fieldOptions["poison"] ??= {
             "type": "normal",
             "base": $.options.basePoison ?? 0,
             "relatedTalent": "poison",
         };
-        //baseが有効な値
-        isFieldValid["poison"] = $.options.fieldOptions.poison.base;
 
         //毒持続
         $.options.fieldOptions["poisonDuration"] ??= {
