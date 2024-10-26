@@ -103,21 +103,19 @@ export const main = ($) => {
             "increase": 1,
         };
 
+        isFieldValid["damage"] = !!($.options.fieldOptions.damage || $.options.baseDamage);
         //攻撃力
         $.options.fieldOptions["damage"] ??= {
             "type": "normal",
             "base": $.options.baseDamage ?? 0,
         };
-        //baseが有効な値
-        isFieldValid["damage"] = $.options.fieldOptions.damage.base;
 
+        isFieldValid["health"] = !!($.options.fieldOptions.health || $.options.baseHealth);
         //体力
         $.options.fieldOptions["health"] ??= {
             "type": "health",
             "base": $.options.baseHealth ?? 0,
         };
-        //baseが有効な値
-        isFieldValid["health"] = $.options.fieldOptions.health.base;
 
         $.options.fieldOptions["maxHealth"] ??= {
             "type": "health",
@@ -142,14 +140,13 @@ export const main = ($) => {
             "secondBaseFieldId": "uniqueArmor",
         }
 
+        isFieldValid["poison"] = !!($.options.fieldOptions.poison || $.options.basePoison);
         //毒
         $.options.fieldOptions["poison"] ??= {
             "type": "normal",
             "base": $.options.basePoison ?? 0,
             "relatedTalent": "poison",
         };
-        //baseが有効な値
-        isFieldValid["poison"] = $.options.fieldOptions.poison.base;
 
         //毒持続
         $.options.fieldOptions["poisonDuration"] ??= {
