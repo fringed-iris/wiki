@@ -92,12 +92,7 @@ function mainDraw() {
     drawFlower();
 }
 
-export function main() {
-
-    document.body.addEventListener("mousemove", (e) => {
-        angle = Math.atan2((e.pageX - window.pageXOffset - canvas.getBoundingClientRect().x) * window.devicePixelRatio - center.x, -((e.pageY - window.pageYOffset - canvas.getBoundingClientRect().y) * window.devicePixelRatio - center.y));
-    });
-
+function everyFrameFunc() {
     let currentTime = Date.now();
     let updated = false;
     while (currentTime - prevTime > targetInterval * 0.5) {
@@ -116,5 +111,14 @@ export function main() {
     if (updated) {
         mainDraw();
     }
-    requestAnimationFrame(main);
+}
+
+export function main() {
+
+    //init
+    document.body.addEventListener("mousemove", (e) => {
+        angle = Math.atan2((e.pageX - window.pageXOffset - canvas.getBoundingClientRect().x) * window.devicePixelRatio - center.x, -((e.pageY - window.pageYOffset - canvas.getBoundingClientRect().y) * window.devicePixelRatio - center.y));
+    });
+
+    requestAnimationFrame(everyFrameFunc);
 }
