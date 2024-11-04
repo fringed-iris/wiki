@@ -118,7 +118,6 @@ export function main() {
     //init
     document.body.addEventListener("mousemove", (e) => {
         angle = Math.atan2((e.pageX - window.pageXOffset - canvas.getBoundingClientRect().x) * window.devicePixelRatio - center.x, -((e.pageY - window.pageYOffset - canvas.getBoundingClientRect().y) * window.devicePixelRatio - center.y));
+        requestAnimationFrame(everyFrameFunc);
     });
-
-    requestAnimationFrame(everyFrameFunc);
 }
