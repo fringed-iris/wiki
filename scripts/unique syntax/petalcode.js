@@ -4,6 +4,50 @@ petalcode (statustable ver4.3)
 
 import { createStatusTable, PulldownMenufyHost, Talents, TALENTS_FACTOR_DEFAULT, TALENTS_VAL } from "./../util/statustable.js"
 
+//specialStatusのオプションを、fieldとcolumnに振り分ける。補完は行わない
+const convertSpecialStatusInto = function (options) {
+
+    let Fopts = {};
+    let Copts = {};
+
+    //type
+    switch (options.type) {
+        case "rarity":
+            Fopts.type = "unique";
+            break;
+        default:
+            Fopts.type = options.type;
+    }
+
+    switch (options.type) {
+        case "rarity":
+            Copts.viewType = "rarity";
+            break;
+        default:
+            Copts.viewType = "normal";
+    }
+
+    //other
+    Fopts.base = options.base;
+    Fopts.increase = options.increase;
+    if (options.type == "rarity") Fopts.uniqueDatas = options.uniqueDatas ?? options.uniqueRarityNumbers; //後方互換
+    if (options.type == "unique") Fopts.uniqueDatas = options.uniqueDatas;
+    Fopts.baseFieldId = options.baseFieldId;
+    Fopts.secondBaseFieldId = options.secondBaseFieldId;
+
+    Copts.name = options.name;
+    Copts.last = options.last;
+    Copts.first = options.first;
+    Copts.width = options.width;
+    Copts.toFixed = options.toFixed;
+    Copts.isHidden = options.isHidden ?? false;
+
+    return { field: Fopts, column: Copts };
+}
+
+
+
+
 export const main = ($) => {
 
     const TALENTS_FACTOR = new Talents(
@@ -32,52 +76,10 @@ export const main = ($) => {
 
                 let opts = $.options.specialStatus[i];
                 let Fopts, Copts;
-
-                {
-                    //specialStatusのオプションを、fieldとcolumnに振り分ける。補完は行わない
-                    const convertSpecialStatusInto = function (options) {
-
-                        let Fopts = {};
-                        let Copts = {};
-
-                        //type
-                        switch (options.type) {
-                            case "rarity":
-                                Fopts.type = "unique";
-                                break;
-                            default:
-                                Fopts.type = options.type;
-                        }
-
-                        switch (options.type) {
-                            case "rarity":
-                                Copts.viewType = "rarity";
-                                break;
-                            default:
-                                Copts.viewType = "normal";
-                        }
-
-                        //other
-                        Fopts.base = options.base;
-                        Fopts.increase = options.increase;
-                        if (opts.type == "rarity") Fopts.uniqueDatas = options.uniqueDatas ?? options.uniqueRarityNumbers; //後方互換
-                        if (opts.type == "unique") Fopts.uniqueDatas = options.uniqueDatas;
-                        Fopts.baseFieldId = options.baseFieldId;
-                        Fopts.secondBaseFieldId = options.secondBaseFieldId;
-
-                        Copts.name = options.name;
-                        Copts.last = options.last;
-                        Copts.first = options.first;
-                        Copts.width = options.width;
-                        Copts.toFixed = options.toFixed;
-                        Copts.isHidden = options.isHidden ?? false;
-
-                        return { field: Fopts, column: Copts };
-                    }
-                    let converted = convertSpecialStatusInto(opts);
-                    Fopts = converted.field;
-                    Copts = converted.column;
-                }
+                    
+                let converted = convertSpecialStatusInto(opts);
+                Fopts = converted.field;
+                Copts = converted.column;
 
                 //補完
                 let id = opts.id ?? "special_" + i;
