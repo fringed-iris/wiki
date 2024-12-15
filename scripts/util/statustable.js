@@ -3,8 +3,12 @@ statustable & petalcode & mobcode
 ver 4.3
 ---------- */
 
+//util内のファイルはsystem.jsによって読み込まれていないためwindow.florrをimportする必要があることに注意
 
 "use strict";
+
+import { florr } from "https://fringed-iris.github.io/wiki/scripts/data.js";
+window.florr = florr;
 
 const DEFAULT_TOFIXED_NUM = 1;
 
@@ -20,17 +24,21 @@ export const Talents = class {
 }
 
 export const TALENTS_VAL = new Talents(//各タレントの効果（累積）
-    [-0.08, -0.16, -0.23, -0.29, -0.35, -0.41, -0.45, -0.50],
-    [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80],
-    [0, 0, 1],
-    [0.0625, 0.125, 0.1875, 0.25, 0.3125, 0.375, 0.4375, 0.5],
-    [0, 0, 0, 0, 0, 0, -0.167777],
-
-    //summoner: [0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80]
+window.florr.database.talentFactor.reload,
+window.florr.database.talentFactor.medic,
+window.florr.database.talentFactor.duplicator,
+window.florr.database.talentFactor.poison,
+window.florr.database.talentFactor.CPoison,
 );
 
 //TALENTS_FACTORのデフォ値。これ＋TALENTS_VALがTALENTS_FACTORの値になる
-export const TALENTS_FACTOR_DEFAULT = new Talents(1, 1, 0, 1, 1);
+export const TALENTS_FACTOR_DEFAULT = new Talents(
+    window.florr.database.talentOriginalValue.reload,
+    window.florr.database.talentOriginalValue.medic,
+    window.florr.database.talentOriginalValue.duplicator,
+    window.florr.database.talentOriginalValue.poison,
+    window.florr.database.talentOriginalValue.CPoison,
+);
 
 
 const calcAbility = baseAbility => {
