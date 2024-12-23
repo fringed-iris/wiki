@@ -40,12 +40,29 @@ export const TALENTS_FACTOR_DEFAULT = new Talents(
     window.florr.database.talentOriginalValue.CPoison,
 );
 
-
-const calcAbility = baseAbility => {
+//optionsは完全な任意指定であり、optionsを指定しない場合元のcalcAbilityと同じ挙動をする
+//後方互換性を死守すること
+//options.magnification ... numberまたはレアリティの長さのarrayで指定可。各レアリティ間の倍率を一定またはレアリティごとに指定することができる。
+const calcAbilityPro = (baseAbility, options = {}) => {
     const LIST = new Array(window.florr.rarity.length);
 
     for (let id = 0; id < window.florr.rarity.length; id++) {
-        const FACTOR = 3 ** id;
+        const FACTOR = (() => {
+            const mag = options.magnification;
+            switch(typeof mag) {
+                case "number": return mag ** id;
+                case "object":
+                    if(mag === null) return 3 ** id;
+                    if(Array.isArray(mag)) {
+                        let factor = 1;
+                        for(let id2 = 0; id2 < id; id2++) {
+                            factor *= mag[id2] ?? 1;
+                        };
+                        return factor;
+                    }
+                default: return 3 ** id;
+            }
+        })();
         const AMOUNT = baseAbility * FACTOR;
         LIST[id] = AMOUNT;
     }
@@ -53,46 +70,16 @@ const calcAbility = baseAbility => {
 }
 
 const calcHeal = baseAbility => {
-    const TABLE = new Array(window.florr.rarity.length);
-
-    for (let id = 0; id <= (window.florr.rarity.length - 1); id++) {
-        let factor = 3 ** id;
-        switch (id) {
-            case 6:
-                factor = factor / 3 * 1.73;
-                break;
-            case 7:
-                factor = factor / 3;
-                break;
-
-            default: break;
-        }
-
-        const AMOUNT = (baseAbility * factor);
-        TABLE[id] = AMOUNT;
-    }
-
-    return TABLE;
+    return calcAbilityPro(baseAbility, { magnification: [3, 3, 3, 3, 3, 1.732, 1.732, 1.732] });
 }
 
 const calcDefaultMobArmor = baseAbility => {
-    const TABLE = new Array(window.florr.rarity.length);
+    return calcAbilityPro(baseAbility, { magnification: [3, 3, 3, 3, 3, 3, 1, 1] });
+}
 
-    for (let id = 0; id <= (window.florr.rarity.length - 1); id++) {
-        let factor = 3 ** id;
-        switch (id) {
-            case 7:
-                factor = factor / 3;
-                break;
-
-            default: break;
-        }
-
-        const AMOUNT = (baseAbility * factor);
-        TABLE[id] = AMOUNT;
-    }
-
-    return TABLE;
+//calcManaはマナ系ステータスの倍率を表す。断じて２倍ではないことに注意すべし。
+const calcMana = baseAbility => {
+    return calcAbilityPro(baseAbility, { magnification: 2 });
 }
 
 const calcMobHealth = baseAbility => {
@@ -122,12 +109,12 @@ const calcDPS = options => {
 const calcDPSRange = (options, rarity) => {
     const Hornet = {
         "health": 62.5 * window.florr.database.mobHealthFactor[0],
-        "damage": calcAbility(50)[rarity]
+        "damage": calcAbilityPro(50)[rarity]
     };
 
     const BabyAnt = {
         "health": 25 * window.florr.database.mobHealthFactor[0],
-        "damage": calcAbility(10)[rarity]
+        "damage": calcAbilityPro(10)[rarity]
     };
 
     return {
@@ -168,6 +155,7 @@ const Field = class {
         this.type = options.type ?? "normal"; //計算方式
         this.base = options.base ?? 0;
         this.increase = options.increase ?? 0;
+        this.magnification = options.magnification ?? undefined;
         this.uniqueDatas = options.uniqueDatas; //ユニーク全般
         this.baseField; //依存フィールド１
         this.secondBaseField; //依存フィールド２
@@ -216,13 +204,17 @@ const Field = class {
                 try {
                     switch (this.type) {
                         case "normal":
-                            return calcAbility(correctToNum(this.base));
+                            return calcAbilityPro(correctToNum(this.base));
+                        case "custom":
+                            return calcAbilityPro(correctToNum(this.base), { magnification: this.magnification });
                         case "heal":
                             return calcHeal(correctToNum(this.base));
                         case "health":
                             return calcMobHealth(correctToNum(this.base));
                         case "armor":
                             return calcDefaultMobArmor(correctToNum(this.base));
+                        case "mana":
+                            return calcMana(correctToNum(this.base));
                         case "constant":
                             let arr = [];
                             for (let i = 0; i < window.florr.rarity.length; i++) {
@@ -710,4 +702,17 @@ export const createStatusTable = function (fieldOptions, columnOptionsArr, statu
 
     return TABLE;
 
+}
+
+export const debugFunction = function() {
+    //calcAbilityPro
+    {
+        const test = function(baseAbility, options, target) {
+            const calcedAbility = calcAbilityPro(baseAbility, options);
+            console.log("calced:" + calcedAbility + ", target: " + target);
+        }
+        test(10, {}, [10, 30, 90, 270, 810, 2430, 7290, 21870]);
+        test(10, { magnification: 2 }, [10, 20, 40, 80, 160, 320, 640, 1280]);
+        test(1, { magnification: [2,3,2,3,2,3,2] }, [1, 2, 6, 12, 36, 72, 216, 432]);
+    }
 }
