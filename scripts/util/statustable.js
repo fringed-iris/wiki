@@ -24,11 +24,11 @@ export const Talents = class {
 }
 
 export const TALENTS_VAL = new Talents(//各タレントの効果（累積）
-window.florr.database.talentFactor.reload,
-window.florr.database.talentFactor.medic,
-window.florr.database.talentFactor.duplicator,
-window.florr.database.talentFactor.poison,
-window.florr.database.talentFactor.CPoison,
+    window.florr.database.talentFactor.reload,
+    window.florr.database.talentFactor.medic,
+    window.florr.database.talentFactor.duplicator,
+    window.florr.database.talentFactor.poison,
+    window.florr.database.talentFactor.CPoison,
 );
 
 //TALENTS_FACTORのデフォ値。これ＋TALENTS_VALがTALENTS_FACTORの値になる
@@ -49,13 +49,13 @@ const calcAbilityPro = (baseAbility, options = {}) => {
     for (let id = 0; id < window.florr.rarity.length; id++) {
         const FACTOR = (() => {
             const mag = options.magnification;
-            switch(typeof mag) {
+            switch (typeof mag) {
                 case "number": return mag ** id;
                 case "object":
-                    if(mag === null) return 3 ** id;
-                    if(Array.isArray(mag)) {
+                    if (mag === null) return 3 ** id;
+                    if (Array.isArray(mag)) {
                         let factor = 1;
-                        for(let id2 = 0; id2 < id; id2++) {
+                        for (let id2 = 0; id2 < id; id2++) {
                             factor *= mag[id2] ?? 1;
                         };
                         return factor;
@@ -77,8 +77,12 @@ const calcDefaultMobArmor = baseAbility => {
     return calcAbilityPro(baseAbility, { magnification: [3, 3, 3, 3, 3, 3, 1, 1] });
 }
 
-//calcManaはマナ系ステータスの倍率を表す。断じて２倍ではないことに注意すべし。
+//calcManaはマナ系ステータスの倍率を表す。２倍とは限らないことに注意すべし。
 const calcMana = baseAbility => {
+    return calcAbilityPro(baseAbility, { magnification: 2 });
+}
+
+const calcManaUse = baseAbility => {
     return calcAbilityPro(baseAbility, { magnification: 2 });
 }
 
@@ -201,51 +205,49 @@ const Field = class {
             function correctToNum(num) { return (typeof num == "number") ? num : 0; } //Correct To Number
 
             return (() => { //何があろうとNumber型を返す
-                try {
-                    switch (this.type) {
-                        case "normal":
-                            return calcAbilityPro(correctToNum(this.base));
-                        case "custom":
-                            return calcAbilityPro(correctToNum(this.base), { magnification: this.magnification });
-                        case "heal":
-                            return calcHeal(correctToNum(this.base));
-                        case "health":
-                            return calcMobHealth(correctToNum(this.base));
-                        case "armor":
-                            return calcDefaultMobArmor(correctToNum(this.base));
-                        case "mana":
-                            return calcMana(correctToNum(this.base));
-                        case "constant":
-                            let arr = [];
-                            for (let i = 0; i < window.florr.rarity.length; i++) {
-                                arr.push(correctToNum(this.base + i * this.increase));
-                            }
-                            return arr;
-                        case "FplusF":
-                            base = this.baseField.getValueArr();
-                            return this.secondBaseField.getValueArr().map((e, i) => { return base[i] + e });
-                        case "FminusF":
-                            base = this.baseField.getValueArr();
-                            return this.secondBaseField.getValueArr().map((e, i) => { return base[i] - e });
-                        case "FtimesF":
-                            base = this.baseField.getValueArr();
-                            return this.secondBaseField.getValueArr().map((e, i) => { return base[i] * e });
-                        case "FoverF":
-                            base = this.baseField.getValueArr();
-                            return this.secondBaseField.getValueArr().map((e, i) => { return (base[i] / e) ?? 0 });
-                        case "FplusB":
-                            return this.baseField.getValueArr().map(e => { return e + this.base; });
-                        case "FtimesB":
-                            return this.baseField.getValueArr().map(e => { return e * this.base; });
-                        case "FFmax":
-                            return this.baseField.getValueArr().map(e => { return Math.max(e, base[i]) });
-                        case "FFmin":
-                            return this.baseField.getValueArr().map(e => { return Math.min(e, base[i]) });
-                        default:
-                            return [0, 0, 0, 0, 0, 0, 0, 0];
-                    }
-                } catch {
-                    return [0, 0, 0, 0, 0, 0, 0, 0];
+                switch (this.type) {
+                    case "normal":
+                        return calcAbilityPro(correctToNum(this.base));
+                    case "custom":
+                        return calcAbilityPro(correctToNum(this.base), { magnification: this.magnification });
+                    case "heal":
+                        return calcHeal(correctToNum(this.base));
+                    case "health":
+                        return calcMobHealth(correctToNum(this.base));
+                    case "armor":
+                        return calcDefaultMobArmor(correctToNum(this.base));
+                    case "mana":
+                        return calcMana(correctToNum(this.base));
+                    case "manause":
+                        return calcManaUse(correctToNum(this.base));
+                    case "constant":
+                        let arr = [];
+                        for (let i = 0; i < window.florr.rarity.length; i++) {
+                            arr.push(correctToNum(this.base + i * this.increase));
+                        }
+                        return arr;
+                    case "FplusF":
+                        base = this.baseField.getValueArr();
+                        return this.secondBaseField.getValueArr().map((e, i) => { return base[i] + e });
+                    case "FminusF":
+                        base = this.baseField.getValueArr();
+                        return this.secondBaseField.getValueArr().map((e, i) => { return base[i] - e });
+                    case "FtimesF":
+                        base = this.baseField.getValueArr();
+                        return this.secondBaseField.getValueArr().map((e, i) => { return base[i] * e });
+                    case "FoverF":
+                        base = this.baseField.getValueArr();
+                        return this.secondBaseField.getValueArr().map((e, i) => { return (base[i] / e) ?? 0 });
+                    case "FplusB":
+                        return this.baseField.getValueArr().map(e => { return e + this.base; });
+                    case "FtimesB":
+                        return this.baseField.getValueArr().map(e => { return e * this.base; });
+                    case "FFmax":
+                        return this.baseField.getValueArr().map(e => { return Math.max(e, base[i]) });
+                    case "FFmin":
+                        return this.baseField.getValueArr().map(e => { return Math.min(e, base[i]) });
+                    default:
+                        return florr.dataObj.createArrayOfRarity(0);
                 }
             })().map(correctToNum);
         })();
@@ -459,7 +461,7 @@ const Column = class {
 
 
 export const PulldownMenufyHost = class {
-    constructor() {}
+    constructor() { }
 
     DEFAULT_LABEL_NONE = {
         label: "なし",
@@ -626,7 +628,7 @@ export const PulldownMenufyHost = class {
 
 //fieldTableを生成する
 //FieldとFieldTableに依存
-const createFieldTable = function(fieldOptions, fieldTableOptions) {
+const createFieldTable = function (fieldOptions, fieldTableOptions) {
 
     const TALENTS_FACTOR = fieldTableOptions.TALENTS_FACTOR;
 
@@ -704,15 +706,15 @@ export const createStatusTable = function (fieldOptions, columnOptionsArr, statu
 
 }
 
-export const debugFunction = function() {
+export const debugFunction = function () {
     //calcAbilityPro
     {
-        const test = function(baseAbility, options, target) {
+        const test = function (baseAbility, options, target) {
             const calcedAbility = calcAbilityPro(baseAbility, options);
             console.log("calced:" + calcedAbility + ", target: " + target);
         }
         test(10, {}, [10, 30, 90, 270, 810, 2430, 7290, 21870]);
         test(10, { magnification: 2 }, [10, 20, 40, 80, 160, 320, 640, 1280]);
-        test(1, { magnification: [2,3,2,3,2,3,2] }, [1, 2, 6, 12, 36, 72, 216, 432]);
+        test(1, { magnification: [2, 3, 2, 3, 2, 3, 2] }, [1, 2, 6, 12, 36, 72, 216, 432]);
     }
 }

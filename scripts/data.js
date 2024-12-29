@@ -3,6 +3,39 @@
 //初期化
 export const florr = {}
 
+//入り用のデータオブジェクト
+florr.dataObj = {};
+($ => {
+    //入力された値から、レアリティの長さの配列を生成する。データ型に近い。
+    //データ型として'arrayOfRarity'と書けば、これによって生成されたものを指す。そういうことにする。
+    $.createArrayOfRarity = function(param) {
+        const arr = Array(florr.rarity.length);
+
+        for(let rID = 0; i < arr.length; i++) {
+            let value;
+            switch(typeof param) {
+                case "number", "string", "boolean": value = param; break;
+                case "object":
+                    if(Array.isArray(param)) {
+                        //入力された配列の長さがレアリティの長さに足りているかどうか判別する。足りない場合は長さを揃える。なぜなら、この関数はデータとしての規格を揃えることを優先するからである。
+                        if(arr.length > rID) {
+                            value = param[rID];
+                            break;
+                        } else {
+                            value = undefined;
+                            break;
+                        }
+                    }
+                default: value = undefined; break;
+            }
+
+            arr[rID] = value;
+        }
+
+        return arr;
+    }
+})(florr.dataObj);
+
 //レアリティ関連のデータ
 florr.rarity = {};
 ($ => {
@@ -16,6 +49,7 @@ florr.rarity = {};
     $.id[$.id["My"] = 5] = "My";
     $.id[$.id["Ul"] = 6] = "Ul";
     $.id[$.id["Sp"] = 7] = "Sp";
+    $.id[$.id["Uq"] = 8] = "Uq";
 
     //レアリティID　←→　レアリティ名
     $.name = {};
@@ -27,6 +61,7 @@ florr.rarity = {};
     $.name[$.name["Mythic"] = "My"] = "Mythic";
     $.name[$.name["Ultra"] = "Ul"] = "Ultra";
     $.name[$.name["Super"] = "Sp"] = "Super";
+    $.name[$.name["Unique"] = "Uq"] = "Unique";
 
     //レアリティID　→　レアリティ色
     $.color = {
@@ -39,7 +74,8 @@ florr.rarity = {};
             [$.id[4]]: "#de1f1f",
             [$.id[5]]: "#1fdbde",
             [$.id[6]]: "#ff2b75",
-            [$.id[7]]: "#2bffa3"
+            [$.id[7]]: "#2bffa3",
+            [$.id[8]]: "#555555",
         },
         text: {
             [$.id[0]]: "#000",
@@ -49,7 +85,8 @@ florr.rarity = {};
             [$.id[4]]: "#fff",
             [$.id[5]]: "#000",
             [$.id[6]]: "#fff",
-            [$.id[7]]: "#000"
+            [$.id[7]]: "#000",
+            [$.id[8]]: "#fff",
         }
     }
 })(florr.rarity);
@@ -69,7 +106,7 @@ florr.themeColor = (() => {
 
 florr.database = {//ペタル、モブ関連のデータ
     //モブの体力比
-    mobHealthFactor: [1.0, 3.75, 13.5, 54, 405, 2430, 29160, 1312200],
+    mobHealthFactor: [1.0, 3.75, 13.5, 54, 405, 2430, 29160, 1312200, 19683000],
     //既定アーマー
     defaultArmor: 0.8,
     //それぞれのタレントのオリジナル値
