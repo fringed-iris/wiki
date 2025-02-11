@@ -22,7 +22,7 @@ export function main() {
                 newColor("Mythic", window.florr.rarity.color.background[window.florr.rarity.id[5]]),
                 newColor("Ultra", window.florr.rarity.color.background[window.florr.rarity.id[6]]),
                 newColor("Super", window.florr.rarity.color.background[window.florr.rarity.id[7]]),
-                newColor("Ultra", window.florr.rarity.color.background[window.florr.rarity.id[8]]),
+                newColor("Unique", window.florr.rarity.color.background[window.florr.rarity.id[8]]),
             ],
         },
 
