@@ -662,9 +662,10 @@ export const createStatusTable = function (fieldOptions, columnOptionsArr, statu
         }
     })
 
+    //statusTableOptions...Table全体の設定
     const TALENTS_FACTOR = statusTableOptions.TALENTS_FACTOR;
-
     const leastRarity = statusTableOptions.leastRarity;
+    const maxRarity = statusTableOptions.maxRarity;
 
     const TABLE = document.createElement("table");
 
@@ -695,7 +696,7 @@ export const createStatusTable = function (fieldOptions, columnOptionsArr, statu
                 columnArr[j].pushNewCell(TD);
             }
         }
-        if (rID != -1 && rID < leastRarity) TR.style.display = "none";
+        if ((rID != -1 && rID < leastRarity) || rID > maxRarity) TR.style.display = "none";
     }
 
     TABLE.updateWhole();
