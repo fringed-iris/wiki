@@ -665,7 +665,7 @@ export const createStatusTable = function (fieldOptions, columnOptionsArr, statu
     //statusTableOptions...Table全体の設定
     const TALENTS_FACTOR = statusTableOptions.TALENTS_FACTOR;
     const leastRarity = statusTableOptions.leastRarity;
-    const maxRarity = statusTableOptions.maxRarity;
+    const maxRarity = statusTableOptions.maxRarity ?? 10000;
 
     const TABLE = document.createElement("table");
 
