@@ -364,6 +364,7 @@ const Column = class {
         this.fieldId = options.fieldId; //Fieldに依存
         this.secondFieldId = options.secondFieldId ?? undefined;
         this.toFixed = options.toFixed ?? DEFAULT_TOFIXED_NUM;
+        this.specialToFixedType = options.specialToFixedType ?? "normal";//specialStatusでは設定不可にしておく
         this.first = options.first ?? "";
         this.last = options.last ?? "";
         this.viewType = options.viewType ?? "normal";
@@ -394,9 +395,15 @@ const Column = class {
 
         let fix = v => {
             let vFixed;
+            let first = this.first;
+            let last = this.last;
             switch (typeof v) {
                 case "number":
                     vFixed = v.toFixed(this.toFixed);
+                    for(let i = this.toFixed; this.specialToFixedType === "chance" && Number(vFixed) === 0; i++) {
+                        vFixed = v.toFixed(i);
+                        if(i > 3) { vFixed = "-"; last = ""; break;}
+                    }
                     break;
                 case "string":
                     vFixed = v;
@@ -404,7 +411,7 @@ const Column = class {
                 default:
                     vFixed = 0;
             }
-            return this.first + vFixed + this.last;
+            return first + vFixed + last;
         }
 
         for (let rID = -1; rID < this.cellArr.length; rID++) {
