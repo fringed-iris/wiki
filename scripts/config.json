@@ -55,6 +55,12 @@
                 "options": "object",
                 "originId": true
             }
+        },
+        "dropcode": {
+            "arg": {
+                "options": "object",
+                "originId": true
+            }
         }
     },
     "external": {}
