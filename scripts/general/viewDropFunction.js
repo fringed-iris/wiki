@@ -4,7 +4,7 @@ import dropGetFunc from "https://fringed-iris.github.io/wiki/scripts/util/dropge
 export function main() {
     const targetPageName = "dropcode_json";
     const q = window.location.pathname.split("/");
-    presentPageName = q[q.length - 1];
+    const presentPageName = q[q.length - 1];
     if(targetPageName !== presentPageName) return;
 
     generateCodeIn(document.getElementById("dropfunc"));
