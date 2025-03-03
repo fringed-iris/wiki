@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        * {
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div id="petalcode"></div>
+        <div id="mobcode"></div>
+        <div id="dropcode"></div>
+    </div>
+    <script type="module">
+
+        import { florr } from "./../scripts/data.js";
+        import { main as createPetalDataTable } from "./../scripts/unique syntax/petalcode.js";
+        import { main as createMobDataTable } from "./../scripts/unique syntax/mobcode.js";
+        import { debugMain as createDropTable } from "./../scripts/unique syntax/dropcode.js";
+        import { petalStatusOptions, mobStatusOptions } from "./testerData.js";
+
+        addEventListener("DOMContentLoaded", () => {
+            //window.florrが全てのwikiスクリプトを内包
+            window.florr = florr;
+
+            createDropTable({options: {baseChanceStr: "1"}, originId: "dropcode"});
+            createPetalDataTable(
+                {
+                    originId: "petalcode",
+                    options: petalStatusOptions,
+                }
+            );
+            createMobDataTable(
+                {
+                    originId: "mobcode",
+                    options: mobStatusOptions,
+                }
+            );
+        })
+    </script>
+</body>
+
+</html>
