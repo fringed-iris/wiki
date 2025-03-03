@@ -2,7 +2,7 @@ import { florr } from "https://fringed-iris.github.io/wiki/scripts/data.js";
 window.florr = florr;
 
 export default function (baseChance) {
-    main = {
+    const main = {
         getDropTable: `
 const dropTable = [];
 for(let mob = 0; mob < ${window.florr.rarity.length}; mob++) { //mob
