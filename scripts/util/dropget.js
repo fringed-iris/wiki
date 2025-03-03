@@ -19,6 +19,7 @@ for(let mob = 0; mob < ${window.florr.rarity.length}; mob++) { //mob
 }
 dropTableStr += "]";
 console.log(dropTableStr);`,
+    getDropTableZip: `let t="[";for(let m=0;m<${window.florr.rarity.length};m++){if(m!==0)t+=",";let l="[";for(let p=0;p<${window.florr.rarity.length};p++){if(p!==0)l+=",";let d=florrio.utils.calculateDropChance(${baseChance},m,p).toFixed(8);if(d==0)d="0";l+=d}l+="]";t+=l}t+="]";console.log(t);`,
     }
     return main;
 }
