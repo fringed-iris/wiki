@@ -23,6 +23,9 @@
         },
         "wikiEditorAddon": {
             "arg": {}
+        },
+        "viewDropFunction": {
+            "arg": {}
         }
     },
     "unique syntax": {
