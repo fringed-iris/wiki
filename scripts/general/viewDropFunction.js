@@ -27,7 +27,7 @@ function generateCodeIn(whole) {
     }
     controlBox.appendChild(button);
 
-    const functionList = [{funcName:"getDropTable",description:"あるbaseChanceのjsonを生成する",box}];
+    const functionList = [{funcName:"getDropTable",description:"あるbaseChanceのjsonを生成する",box:null,}];
     functionList.forEach((e, i) => {
         const box = document.createElement("div");
         const h4 = document.createElement("h4");
