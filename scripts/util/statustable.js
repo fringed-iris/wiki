@@ -138,7 +138,7 @@ const calcDPSRange = (options, rarity) => {
 
 
 
-const setRarityCellStyleAndText = (cell, rID) => {
+export const setRarityCellStyleAndText = (cell, rID) => {
     Object.assign(cell.style, {
         textAlign: "center",
         backgroundColor: window.florr.rarity.color.background[window.florr.rarity.id[rID]],
@@ -703,6 +703,7 @@ export const createStatusTable = function (fieldOptions, columnOptionsArr, statu
 
     TABLE.appendChild(TBODY);
 
+    console.log(columnArr);
     return TABLE;
 
 }
