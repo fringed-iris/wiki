@@ -1,7 +1,7 @@
 import { florr } from "https://fringed-iris.github.io/wiki/scripts/data.js";
 window.florr = florr;
 
-export function getMain(baseChance) {
+export default function (baseChance) {
     main = {
         getDropTable: `
 const dropTable = [];
