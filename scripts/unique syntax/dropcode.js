@@ -50,7 +50,7 @@ const testDropTableData = {
 
 /** もちろんPromise*/
 export const main = $ => {
-    loadDropTableData().then($ => debugMain($));
+    loadDropTableData().then(obj => debugMain($, obj));
 }
 
 /** mainの続き　fetchを使わずにオフラインでデバッグできるmain関数としても使える*/
