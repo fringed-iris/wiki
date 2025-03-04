@@ -55,11 +55,13 @@ export const main = $ => {
 
 /** mainの続き　fetchを使わずにオフラインでデバッグできるmain関数としても使える*/
 export const debugMain = ($, object) => {
-    //$.options = {boolRarities, leastRarity, maxRarity, allowedDropRarities, petalLeastRarity, petalMaxRarity}
+    //$.options = {boolRarities, leastRarity, maxRarity, allowedDropRarities, petalLeastRarity, petalMaxRarity, mobs, petals}
     const options = {
         mobShowedRarities: $.options.boolRarities ?? calcBoolRarities($.options.leastRarity ?? 0, $.options.maxRarity ?? 10000),
         petalAllowedRarities: $.options.allowedDropRarities ?? calcBoolRarities($.options.petalLeastRarity ?? 0, $.options.petalMaxRarity ?? 6),
         chanceStr: $.options.baseChanceStr,
+        mobs: $.options.mobs ?? [],
+        petals: $.options.petals ?? [],
     }
     generateWhole(options, $.originId, object ?? testDropTableData)
 }
@@ -67,18 +69,40 @@ export const debugMain = ($, object) => {
 /** debugMainのつづき */
 function generateWhole(options, originId, allDropTableDatas) {
     //options.chanceStr, options.petalAllowedRarities, options.mobShowedRarities
+    const DIV = document.createElement("div");
+
     if (!allDropTableDatas.hasOwnProperty(options.chanceStr)) {
-        const div = document.createElement("div");
-        div.innerHTML = "このドロップ率はまだ登録されていません。詳しくは<a href='/wiki/特殊構文について'>こちら</a>";
-        document.getElementById(originId).parentNode.insertBefore(div, document.getElementById(originId));
-        return;
+        DIV.innerHTML = "このドロップ率はまだ登録されていません。詳しくは<a href='/wiki/特殊構文について'>こちら</a>";
+    } else {
+        const dropTableData = calcFromAllowedRarities((x100(allDropTableDatas[options.chanceStr])), options.petalAllowedRarities);
+        const fc = calcFieldColumnOptions(dropTableData, options.petalAllowedRarities);
+        const TABLE = createDropTable(fc[0], fc[1], options.mobShowedRarities);
+        const SIDEDIV = generateSideDiv(options.petals, options.mobs);
+
+        DIV.style="display:flex;";
+        DIV.appendChild(SIDEDIV);
+        DIV.appendChild(TABLE);
     }
+    insertTableBeforeOriginId(DIV, originId);
 
-    const dropTableData = calcFromAllowedRarities((x100(allDropTableDatas[options.chanceStr])), options.petalAllowedRarities);
-    const fc = calcFieldColumnOptions(dropTableData, options.petalAllowedRarities);
-    const TABLE = createDropTable(fc[0], fc[1], options.mobShowedRarities);
-    insertTableBeforeOriginId(TABLE, originId);
+}
 
+function generateSideDiv(petals, mobs) {
+    const div = document.createElement("div");
+    if(!mobs && !petals) return div;
+    div.style="width:90px; font-weight:bold; text-align:center;"
+    const minidivStyle = "";
+    petals.forEach(petal => {
+        const minidiv = document.createElement("div");
+        minidiv.innerHTML = `<a href="/wiki/${petal}" style="${minidivStyle}">${petal}</a>`;
+        div.appendChild(minidiv);
+    })
+    mobs.forEach(mob => {
+        const minidiv = document.createElement("div");
+        minidiv.innerHTML = `<a href="/wiki/${mob} (mob)" style="${minidivStyle}">${mob}</a>`;
+        div.appendChild(minidiv);
+    })
+    return div;
 }
 
 function calcFieldColumnOptions(dropTableData, allowedRarity) {
