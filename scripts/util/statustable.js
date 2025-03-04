@@ -710,7 +710,6 @@ export const createStatusTable = function (fieldOptions, columnOptionsArr, statu
 
     TABLE.appendChild(TBODY);
 
-    console.log(columnArr);
     return TABLE;
 
 }

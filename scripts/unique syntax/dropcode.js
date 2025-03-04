@@ -66,7 +66,6 @@ export const debugMain = ($, object) => {
 function calcAllowedRarities(leastRarity, maxRarity) {
     const arr = [];
     for (let i = 0; i < window.florr.rarity.length; i++) arr.push((leastRarity <= i) && (i <= maxRarity));
-    console.log(arr);
     return arr;
 }
 
