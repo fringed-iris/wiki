@@ -108,6 +108,9 @@ function generateSideDiv(petals, mobs, chanceStr) {
                 minidiv.style = minidivStyle;
         div.appendChild(minidiv);
     })
+    const endDiv = document.createElement("div");
+    endDiv.style = "flex-grow:1; background-color:var(--c-subTheme_dark)";
+    div.appendChild(endDiv);
     return div;
 }
 
