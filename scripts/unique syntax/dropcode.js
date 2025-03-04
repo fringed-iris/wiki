@@ -55,10 +55,10 @@ export const main = $ => {
 
 /** mainの続き　fetchを使わずにオフラインでデバッグできるmain関数としても使える*/
 export const debugMain = ($, object) => {
-    //$.options = {boolRarities, leastRarity, maxRarity, allowedDropRarities, petalLeastRarity, petalMaxRarity, mobs, petals}
+    //$.options = {displayedRarities, leastRarity, maxRarity, allowedDropRarities, dropLeastRarity, dropMaxRarity, mobs, petals}
     const options = {
-        mobShowedRarities: $.options.boolRarities ?? calcBoolRarities($.options.leastRarity ?? 0, $.options.maxRarity ?? 10000),
-        petalAllowedRarities: $.options.allowedDropRarities ?? calcBoolRarities($.options.petalLeastRarity ?? 0, $.options.petalMaxRarity ?? 6),
+        mobShowedRarities: $.options.displayedRarities ?? calcBoolRarities($.options.leastRarity ?? 0, $.options.maxRarity ?? 10000),
+        petalAllowedRarities: $.options.allowedDropRarities ?? calcBoolRarities($.options.dropLeastRarity ?? 0, $.options.petalMaxRarity ?? 6),
         chanceStr: $.options.baseChanceStr,
         mobs: $.options.mobs ?? [],
         petals: $.options.petals ?? [],
