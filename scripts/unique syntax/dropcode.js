@@ -1,6 +1,7 @@
 "use strict";
 
 import { createStatusTable, insertTableBeforeOriginId, calcBoolRarities } from "../util/statustable.js";
+import { convertPetalIntoImageName, convertMobIntoImageName } from "../util/valuecontrol.js";
 
 /** 好きなページの好きなidの要素を返す（Promise）*/
 async function getElementFromPageAndId(page, id) {
@@ -90,27 +91,44 @@ function generateWhole(options, originId, allDropTableDatas) {
 function generateSideDiv(petals, mobs, chanceStr) {
     const div = document.createElement("div");
     if(!(mobs.length + petals.length)) return div;
+
     div.style="display:flex; flex-direction: column; width:150px; font-weight:bold; text-align:center; border:var(--mlt-table_normal) calc(var(--val-borderWidth) / 2);"
     const minidivStyle = "border: var(--mlt-table_normal) calc(var(--val-borderWidth) / 2);";
+    const imgStyle = "width:80px;";
+
     const chanceDiv = document.createElement("div");
     chanceDiv.innerHTML = `baseChance<br><span style="font-size:1.5em;">${chanceStr}</span>`;
     chanceDiv.style = minidivStyle + "background-color: var(--c-subTheme_light)";
     div.appendChild(chanceDiv);
+
     petals.forEach(petal => {
+        const pName = petal[0], pRarity = petal[1];
         const minidiv = document.createElement("div");
-        minidiv.innerHTML = `<a href="/wiki/${petal}">${petal}</a>`;
+        minidiv.innerHTML = `<a href="/wiki/${pName}">${pName}</a><br>`;
+        const img = document.createElement("img");
+        img.style = imgStyle;
+        img.src = "/image/" + convertPetalIntoImageName(pName, pRarity);
+        minidiv.appendChild(img);
         minidiv.style = minidivStyle;
         div.appendChild(minidiv);
     })
+
     mobs.forEach(mob => {
+        const mName = mob[0], mRarity = mob[1];
         const minidiv = document.createElement("div");
-        minidiv.innerHTML = `<a href="/wiki/${mob} (mob)">${mob}</a>`;
-                minidiv.style = minidivStyle;
+        minidiv.innerHTML = `<a href="/wiki/${mName} (mob)">${mName}</a><br>`;
+        minidiv.style = minidivStyle;
+        const img = document.createElement("img");
+        img.style = imgStyle;
+        img.src = "/image/" + convertMobIntoImageName(mName, mRarity);
+        minidiv.appendChild(img);
         div.appendChild(minidiv);
     })
+
     const endDiv = document.createElement("div");
     endDiv.style = "flex-grow:1; background-color:var(--c-subTheme_dark)";
     div.appendChild(endDiv);
+
     return div;
 }
 
