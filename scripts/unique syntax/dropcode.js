@@ -90,8 +90,8 @@ function generateWhole(options, originId, allDropTableDatas) {
 function generateSideDiv(petals, mobs, chanceStr) {
     const div = document.createElement("div");
     if(!(mobs.length + petals.length)) return div;
-    div.style="display:flex; flex-direction: column; width:150px; font-weight:bold; text-align:center; border-collapse:collapse;"
-    const minidivStyle = "border: var(--mlt-table_normal) var(--val-borderWidth);";
+    div.style="display:flex; flex-direction: column; width:150px; font-weight:bold; text-align:center; border:var(--mlt-table_normal) calc(var(--val-borderWidth) / 2);"
+    const minidivStyle = "border: var(--mlt-table_normal) calc(var(--val-borderWidth) / 2);";
     const chanceDiv = document.createElement("div");
     chanceDiv.innerHTML = `baseChance<br><span style="font-size:1.5em;">${chanceStr}</span>`;
     chanceDiv.style = minidivStyle + "background-color: var(--c-subTheme_light)";
