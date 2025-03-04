@@ -15,24 +15,28 @@ const convertString = function(string, options = [], params = {}) {
     }
 
     const F = {};
+    /** 半角スペースの次の文字がアルファベットなら半角スペースを抜いて大文字にする */
     F["next_space_upper"] = () => {
         if(!isTail() && string.slice(i, i + 2).match(/^ [a-zA-Z]$/)) {
             i++;
             return string.charAt(i).toUpperCase();
         }
     }
+    /** 語頭が大文字アルファベットなら小文字にする */
     F["head_lower"] = () => {
-        if(isHead() && string[i].match(/[a-z]/)) {
+        if(isHead() && string[i].match(/[A-Z]/)) {
             return string[i].toLowerCase();
         }
     }
-    F["tail_mob"] = () => {
+    /** 語尾に_Mobを付ける */
+    F["tail_mob_img"] = () => {
         if(isTail()) {
             return string[i] + "_Mob";
         }
     }
 
-    F["head_rarity"] = () => {
+    /** 語頭に画像名のレアリティを付ける */
+    F["head_rarity_img"] = () => {
         if(isHead() && typeof params.rarity === "number") {
             return window.florr.rarity.id[params.rarity] + "_" + string[i];
         }
@@ -58,7 +62,7 @@ const convertString = function(string, options = [], params = {}) {
  * @param {number} rarity 画像のレアリティ
 */
 export const convertPetalIntoImageName = function(string, rarity = 0) {
-    return convertString(string, ["next_space_upper", "head_rarity"], { rarity: rarity });
+    return convertString(string, ["next_space_upper", "head_rarity_img"], { rarity: rarity });
 }
 
 /** モブの名前（(mob)を除く）を画像名に変換する
@@ -66,6 +70,6 @@ export const convertPetalIntoImageName = function(string, rarity = 0) {
  * @param {number} rarity 画像のレアリティ
 */
 export const convertMobIntoImageName = function(string, rarity = 0) {
-    const withoutMob = convertString(string, ["next_space_upper", "head_rarity"], { rarity: rarity });
-    return convertString(withoutMob, ["tail_mob"]);
+    const withoutMob = convertString(string, ["next_space_upper", "head_rarity_img"], { rarity: rarity });
+    return convertString(withoutMob, ["tail_mob_img"]);
 }
