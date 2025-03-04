@@ -133,6 +133,13 @@ const calcDPSRange = (options, rarity) => {
     };
 }
 
+/** leastRarityとmaxRarityから配列を計算。leastとmaxの補完はなし */
+export function calcBoolRarities(leastRarity, maxRarity, length = window.florr.rarity.length) {
+    const arr = [];
+    for (let i = 0; i < length; i++) arr.push((leastRarity <= i) && (i <= maxRarity));
+    return arr;
+}
+
 
 
 
@@ -671,8 +678,9 @@ export const createStatusTable = function (fieldOptions, columnOptionsArr, statu
 
     //statusTableOptions...Table全体の設定
     const TALENTS_FACTOR = statusTableOptions.TALENTS_FACTOR;
-    const leastRarity = statusTableOptions.leastRarity;
+    const leastRarity = statusTableOptions.leastRarity ?? 0;
     const maxRarity = statusTableOptions.maxRarity ?? 10000;
+    const boolRarities = statusTableOptions.boolRarities ?? calcBoolRarities(leastRarity, maxRarity);
 
     const TABLE = document.createElement("table");
 
@@ -703,7 +711,7 @@ export const createStatusTable = function (fieldOptions, columnOptionsArr, statu
                 columnArr[j].pushNewCell(TD);
             }
         }
-        if ((rID != -1 && rID < leastRarity) || rID > maxRarity) TR.style.display = "none";
+        if (rID !== -1 && !boolRarities[rID]) TR.style.display = "none";
     }
 
     TABLE.updateWhole();
