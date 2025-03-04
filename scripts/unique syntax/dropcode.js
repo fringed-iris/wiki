@@ -1,6 +1,6 @@
 "use strict";
 
-import { createStatusTable, insertTableBeforeOriginId } from "../util/statustable.js";
+import { createStatusTable, insertTableBeforeOriginId, calcBoolRarities } from "../util/statustable.js";
 
 /** 好きなページの好きなidの要素を返す（Promise）*/
 async function getElementFromPageAndId(page, id) {
@@ -55,32 +55,28 @@ export const main = $ => {
 
 /** mainの続き　fetchを使わずにオフラインでデバッグできるmain関数としても使える*/
 export const debugMain = ($, object) => {
+    //$.options = {boolRarities, leastRarity, maxRarity, allowedDropRarities, petalLeastRarity, petalMaxRarity}
     const options = {
-        allowedRarities: $.options.allowedDropRarities ?? calcAllowedRarities($.options.leastRarity ?? 0, $.options.maxRarity ?? 6),
+        mobShowedRarities: $.options.boolRarities ?? calcBoolRarities($.options.leastRarity ?? 0, $.options.maxRarity ?? 10000),
+        petalAllowedRarities: $.options.allowedDropRarities ?? calcBoolRarities($.options.petalLeastRarity ?? 0, $.options.petalMaxRarity ?? 6),
         chanceStr: $.options.baseChanceStr,
     }
     generateWhole(options, $.originId, object ?? testDropTableData)
 }
 
-/** AllowedRaritiesの指定がないとき計算する */
-function calcAllowedRarities(leastRarity, maxRarity) {
-    const arr = [];
-    for (let i = 0; i < window.florr.rarity.length; i++) arr.push((leastRarity <= i) && (i <= maxRarity));
-    return arr;
-}
-
 /** debugMainのつづき */
 function generateWhole(options, originId, allDropTableDatas) {
-    //options.chanceStr, options.allowedRarities
-    const originDiv = document.getElementById(originId);
+    //options.chanceStr, options.petalAllowedRarities, options.mobShowedRarities
     if (!allDropTableDatas.hasOwnProperty(options.chanceStr)) {
-        originDiv.innerHTML = "このドロップ率はまだ登録されていません";
+        const div = document.createElement("div");
+        div.innerHTML = "このドロップ率はまだ登録されていません。詳しくは<a href='/wiki/特殊構文について'>こちら</a>";
+        document.getElementById(originId).parentNode.insertBefore(div, document.getElementById(originId));
         return;
     }
 
-    const dropTableData = calcFromAllowedRarities((x100(allDropTableDatas[options.chanceStr])), options.allowedRarities);
-    const fc = calcFieldColumnOptions(dropTableData, options.allowedRarities);
-    const TABLE = createDropTable(fc[0], fc[1], options.allowedRarities);
+    const dropTableData = calcFromAllowedRarities((x100(allDropTableDatas[options.chanceStr])), options.petalAllowedRarities);
+    const fc = calcFieldColumnOptions(dropTableData, options.petalAllowedRarities);
+    const TABLE = createDropTable(fc[0], fc[1], options.mobShowedRarities);
     insertTableBeforeOriginId(TABLE, originId);
 
 }
@@ -108,8 +104,8 @@ function calcFieldColumnOptions(dropTableData, allowedRarity) {
     return [fieldOptions, columnOptionsArr];
 }
 
-function createDropTable(fieldOptions, columnOptionsArr, allowedRarities) {
-    const TABLE = createStatusTable(fieldOptions, columnOptionsArr, { leastRarity: 0, TALENTS_FACTOR: [] });
+function createDropTable(fieldOptions, columnOptionsArr, mobShowedRarities) {
+    const TABLE = createStatusTable(fieldOptions, columnOptionsArr, { boolRarities: mobShowedRarities, TALENTS_FACTOR: [] });
     // const headFieldOptions = {rarity:{type:"unique",uniqueDatas:["モブ＼ペタル"]}}, headColumnOptionsArr = [{fieldId:"rarity"}];
     // for (let i = 0; i < window.florr.rarity.length; i++) {
     //     headFieldOptions["rarity" + i] = { type:"constant", base:i,increase:0,};
@@ -117,6 +113,7 @@ function createDropTable(fieldOptions, columnOptionsArr, allowedRarities) {
     // }
     // const TABLEHEAD = createStatusTable(headFieldOptions, headColumnOptionsArr, { maxRarity:0, TALENTS_FACTOR:[] }).tBodies[0].firstChild;
     //TABLE.tBodies[0].insertBefore(TABLEHEAD, TABLE.tBodies[0].firstChild);
+
     return TABLE;
 }
 

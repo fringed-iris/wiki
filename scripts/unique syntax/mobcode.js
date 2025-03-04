@@ -232,6 +232,7 @@ export const main = ($) => {
     const TABLE = createStatusTable(finalFieldOptions, finalColumnOptionsArr, {
         leastRarity: $.options.leastRarity,
         maxRarity: $.options.maxRarity,
+        boolRarities: $.options.boolRarities,
         TALENTS_FACTOR: TALENTS_FACTOR,
     });
 
