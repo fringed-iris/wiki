@@ -90,10 +90,10 @@ function generateWhole(options, originId, allDropTableDatas) {
 function generateSideDiv(petals, mobs, chanceStr) {
     const div = document.createElement("div");
     if(!(mobs.length + petals.length)) return div;
-    div.style="width:90px; font-weight:bold; text-align:center;"
-    const minidivStyle = "min-height:30px; border: var(--val-borderWidth) solid var(--c-subTheme_dark);";
+    div.style="display:flex; flex-direction: column; width:150px; font-weight:bold; text-align:center;"
+    const minidivStyle = "border: var(--val-borderWidth) solid var(--c-subTheme_dark);";
     const chanceDiv = document.createElement("div");
-    chanceDiv.innerHTML = `baseChance: ${chanceStr}`;
+    chanceDiv.innerHTML = `baseChance<br><span style="font-size:1.5em;">${chanceStr}</span>`;
     chanceDiv.style = minidivStyle + "background-color: var(--c-subTheme_light)";
     div.appendChild(chanceDiv);
     petals.forEach(petal => {
@@ -104,7 +104,7 @@ function generateSideDiv(petals, mobs, chanceStr) {
     })
     mobs.forEach(mob => {
         const minidiv = document.createElement("div");
-        minidiv.innerHTML = `<a href="/wiki/${mob} (mob)" style="${minidivStyle}">${mob}</a>`;
+        minidiv.innerHTML = `<a href="/wiki/${mob} (mob)">${mob}</a>`;
                 minidiv.style = minidivStyle;
         div.appendChild(minidiv);
     })
