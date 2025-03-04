@@ -89,7 +89,7 @@ function generateWhole(options, originId, allDropTableDatas) {
 
 function generateSideDiv(petals, mobs) {
     const div = document.createElement("div");
-    if(!mobs && !petals) return div;
+    if(!(mobs.length + petals.length)) return div;
     div.style="width:90px; font-weight:bold; text-align:center;"
     const minidivStyle = "";
     petals.forEach(petal => {
