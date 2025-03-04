@@ -77,7 +77,7 @@ function generateWhole(options, originId, allDropTableDatas) {
         const dropTableData = calcFromAllowedRarities((x100(allDropTableDatas[options.chanceStr])), options.petalAllowedRarities);
         const fc = calcFieldColumnOptions(dropTableData, options.petalAllowedRarities);
         const TABLE = createDropTable(fc[0], fc[1], options.displayedRarities);
-        const SIDEDIV = generateSideDiv(options.petals, options.mobs);
+        const SIDEDIV = generateSideDiv(options.petals, options.mobs, options.chanceStr);
 
         DIV.style="display:flex;";
         DIV.appendChild(SIDEDIV);
@@ -87,19 +87,25 @@ function generateWhole(options, originId, allDropTableDatas) {
 
 }
 
-function generateSideDiv(petals, mobs) {
+function generateSideDiv(petals, mobs, chanceStr) {
     const div = document.createElement("div");
     if(!(mobs.length + petals.length)) return div;
     div.style="width:90px; font-weight:bold; text-align:center;"
-    const minidivStyle = "";
+    const minidivStyle = "min-height:30px; border: var(--val-borderWidth) solid var(--c-subTheme_dark);";
+    const chanceDiv = document.createElement("div");
+    chanceDiv.innerHTML = `baseChance: ${chanceStr}`;
+    chanceDiv.style = minidivStyle + "background-color: var(--c-subTheme_light)";
+    div.appendChild(chanceDiv);
     petals.forEach(petal => {
         const minidiv = document.createElement("div");
-        minidiv.innerHTML = `<a href="/wiki/${petal}" style="${minidivStyle}">${petal}</a>`;
+        minidiv.innerHTML = `<a href="/wiki/${petal}">${petal}</a>`;
+        minidiv.style = minidivStyle;
         div.appendChild(minidiv);
     })
     mobs.forEach(mob => {
         const minidiv = document.createElement("div");
         minidiv.innerHTML = `<a href="/wiki/${mob} (mob)" style="${minidivStyle}">${mob}</a>`;
+                minidiv.style = minidivStyle;
         div.appendChild(minidiv);
     })
     return div;
