@@ -58,7 +58,7 @@ const convertString = function(string, options = [], params = {}) {
  * @param {number} rarity 画像のレアリティ
 */
 export const convertPetalIntoImageName = function(string, rarity = 0) {
-    return convertString(string, ["next_space_upper", "head_lower", "head_rarity"], { rarity: rarity });
+    return convertString(string, ["next_space_upper", "head_rarity"], { rarity: rarity });
 }
 
 /** モブの名前（(mob)を除く）を画像名に変換する
@@ -66,6 +66,6 @@ export const convertPetalIntoImageName = function(string, rarity = 0) {
  * @param {number} rarity 画像のレアリティ
 */
 export const convertMobIntoImageName = function(string, rarity = 0) {
-    const withoutMob = convertString(string, ["next_space_upper", "head_lower", "head_rarity"], { rarity: rarity });
+    const withoutMob = convertString(string, ["next_space_upper", "head_rarity"], { rarity: rarity });
     return convertString(withoutMob, ["tail_mob"]);
 }
