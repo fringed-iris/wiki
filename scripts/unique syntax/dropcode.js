@@ -57,7 +57,7 @@ export const main = $ => {
 export const debugMain = ($, object) => {
     //$.options = {displayedRarities, leastRarity, maxRarity, allowedDropRarities, dropLeastRarity, dropMaxRarity, mobs, petals}
     const options = {
-        mobShowedRarities: $.options.displayedRarities ?? calcBoolRarities($.options.leastRarity ?? 0, $.options.maxRarity ?? 10000),
+        displayedRarities: $.options.displayedRarities ?? calcBoolRarities($.options.leastRarity ?? 0, $.options.maxRarity ?? 10000),
         petalAllowedRarities: $.options.allowedDropRarities ?? calcBoolRarities($.options.dropLeastRarity ?? 0, $.options.petalMaxRarity ?? 6),
         chanceStr: $.options.baseChanceStr,
         mobs: $.options.mobs ?? [],
@@ -68,7 +68,7 @@ export const debugMain = ($, object) => {
 
 /** debugMainのつづき */
 function generateWhole(options, originId, allDropTableDatas) {
-    //options.chanceStr, options.petalAllowedRarities, options.mobShowedRarities
+    //options.chanceStr, options.petalAllowedRarities, options.displayedRarities
     const DIV = document.createElement("div");
 
     if (!allDropTableDatas.hasOwnProperty(options.chanceStr)) {
@@ -76,7 +76,7 @@ function generateWhole(options, originId, allDropTableDatas) {
     } else {
         const dropTableData = calcFromAllowedRarities((x100(allDropTableDatas[options.chanceStr])), options.petalAllowedRarities);
         const fc = calcFieldColumnOptions(dropTableData, options.petalAllowedRarities);
-        const TABLE = createDropTable(fc[0], fc[1], options.mobShowedRarities);
+        const TABLE = createDropTable(fc[0], fc[1], options.displayedRarities);
         const SIDEDIV = generateSideDiv(options.petals, options.mobs);
 
         DIV.style="display:flex;";
@@ -128,8 +128,8 @@ function calcFieldColumnOptions(dropTableData, allowedRarity) {
     return [fieldOptions, columnOptionsArr];
 }
 
-function createDropTable(fieldOptions, columnOptionsArr, mobShowedRarities) {
-    const TABLE = createStatusTable(fieldOptions, columnOptionsArr, { boolRarities: mobShowedRarities, TALENTS_FACTOR: [] });
+function createDropTable(fieldOptions, columnOptionsArr, displayedRarities) {
+    const TABLE = createStatusTable(fieldOptions, columnOptionsArr, { boolRarities: displayedRarities, TALENTS_FACTOR: [] });
     // const headFieldOptions = {rarity:{type:"unique",uniqueDatas:["モブ＼ペタル"]}}, headColumnOptionsArr = [{fieldId:"rarity"}];
     // for (let i = 0; i < window.florr.rarity.length; i++) {
     //     headFieldOptions["rarity" + i] = { type:"constant", base:i,increase:0,};
