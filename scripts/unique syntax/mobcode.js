@@ -2,7 +2,7 @@
 mobcode (statustable ver4.3)
 ---------- */
 
-import { createStatusTable, PulldownMenufyHost, Talents, TALENTS_FACTOR_DEFAULT, TALENTS_VAL } from "./../util/statustable.js"
+import { createStatusTable, PulldownMenufyHost, Talents, TALENTS_FACTOR_DEFAULT, TALENTS_VAL, insertTableBeforeOriginId } from "./../util/statustable.js"
 
 export const main = ($) => {
 
@@ -235,18 +235,5 @@ export const main = ($) => {
         TALENTS_FACTOR: TALENTS_FACTOR,
     });
 
-    {//表を挿入
-        const DIV = document.getElementById($.originId).parentNode;
-        DIV.parentNode.insertBefore(TABLE, DIV);
-        {
-            const P = document.createElement("p");
-            P.innerText = "このステータスは自動生成されています。詳しくは";
-            const A = document.createElement("a");
-            A.innerText = "こちら";
-            A.href = "/wiki/特殊構文について";
-
-            P.appendChild(A);
-            DIV.appendChild(P);
-        }
-    }
+    insertTableBeforeOriginId(TABLE, $.originId);
 }

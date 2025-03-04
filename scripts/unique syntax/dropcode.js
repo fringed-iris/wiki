@@ -1,6 +1,6 @@
 "use strict";
 
-import { createStatusTable } from "../util/statustable.js";
+import { createStatusTable, insertTableBeforeOriginId } from "../util/statustable.js";
 
 /** 好きなページの好きなidの要素を返す（Promise）*/
 async function getElementFromPageAndId(page, id) {
@@ -70,7 +70,7 @@ function calcAllowedRarities(leastRarity, maxRarity) {
     return arr;
 }
 
-/** mainのつづき */
+/** debugMainのつづき */
 function generateWhole(options, originId, allDropTableDatas) {
     //options.chanceStr, options.allowedRarities
     const originDiv = document.getElementById(originId);
@@ -82,7 +82,7 @@ function generateWhole(options, originId, allDropTableDatas) {
     const dropTableData = calcFromAllowedRarities((x100(allDropTableDatas[options.chanceStr])), options.allowedRarities);
     const fc = calcFieldColumnOptions(dropTableData, options.allowedRarities);
     const TABLE = createDropTable(fc[0], fc[1], options.allowedRarities);
-    originDiv.appendChild(TABLE);
+    insertTableBeforeOriginId(TABLE, originId);
 
 }
 

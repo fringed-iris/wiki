@@ -715,6 +715,21 @@ export const createStatusTable = function (fieldOptions, columnOptionsArr, statu
 
 }
 
+export const insertTableBeforeOriginId = function(TABLE, originId) {
+    const DIV = document.getElementById(originId).parentNode;
+    DIV.parentNode.insertBefore(TABLE, DIV);
+    {
+        const P = document.createElement("p");
+        P.innerText = "このステータスは自動生成されています。詳しくは";
+        const A = document.createElement("a");
+        A.innerText = "こちら";
+        A.href = "/wiki/特殊構文について";
+
+        P.appendChild(A);
+        DIV.appendChild(P);
+    }
+}
+
 export const debugFunction = function () {
     //calcAbilityPro
     {
