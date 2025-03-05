@@ -410,7 +410,7 @@ const Column = class {
                     for(let i = this.toFixed; this.specialToFixedType === "chance" && Number(vFixed) === 0; i++) {
                         vFixed = v.toFixed(i);
                         const displayLimit = 4; //小数点第N位まで表示
-                        if(i >= displayLimit) { vFixed = "-"; last = ""; break;}
+                        if(i > displayLimit) { vFixed = "-"; last = ""; break;}
                     }
                     break;
                 case "string":
