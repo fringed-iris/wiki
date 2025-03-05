@@ -39,7 +39,7 @@ baseChanceArr.forEach((baseChance, i) => {
         dropTableStr += dropListStr;
     }
     dropTableStr += "]";
-    wholeStr += "'" + baseChance.toString() + "': " + dropTableStr;
+    wholeStr += "\"" + baseChance.toString() + "\": " + dropTableStr;
     if(i !== baseChanceArr.length - 1) wholeStr += ",";
 });
 console.log(wholeStr);`
