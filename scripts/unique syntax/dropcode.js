@@ -75,7 +75,7 @@ function generateWhole(options, originId, allDropTableDatas) {
     if (!allDropTableDatas.hasOwnProperty(options.chanceStr)) {
         DIV.innerHTML = "このドロップ率はまだ登録されていません。詳しくは<a href='/wiki/特殊構文について'>こちら</a>";
     } else {
-        const dropTableData = calcFromAllowedRarities((x100(allDropTableDatas[options.chanceStr])), options.petalAllowedRarities);
+        const dropTableData = deleteIgnorableChance(calcFromAllowedRarities((x100(allDropTableDatas[options.chanceStr])), options.petalAllowedRarities));
         const fc = calcFieldColumnOptions(dropTableData, options.petalAllowedRarities);
         const TABLE = createDropTable(fc[0], fc[1], options.displayedRarities);
         const SIDEDIV = generateSideDiv(options.petals, options.mobs, options.chanceStr);
@@ -182,4 +182,13 @@ function calcFromAllowedRarities(dropTableData, allowedRarities) {
 
 function x100(dropTableData) {
     return dropTableData.map(e => e.map(f => f * 100));
+}
+
+function deleteIgnorableChance(dropTableData) {
+    dropTableData.forEach((e, mID) => {
+        for (let pID = 0; pID < window.florr.rarity.length; pID++) {
+            if(mID !== pID && Number(e[pID]) <= 0.01) e[pID] = 0;
+        }
+    })
+    return dropTableData;
 }
