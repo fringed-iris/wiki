@@ -400,7 +400,7 @@ const Column = class {
         const field = this.fieldTable.getFieldFromId(this.fieldId);
         const secondField = this.secondFieldId ? this.fieldTable.getFieldFromId(this.secondFieldId) : undefined;
 
-        let fix = v => {
+        let fix = (v, options = {/*rID*/}) => {
             let vFixed;
             let first = this.first;
             let last = this.last;
@@ -409,7 +409,8 @@ const Column = class {
                     vFixed = v.toFixed(this.toFixed);
                     for(let i = this.toFixed; this.specialToFixedType === "chance" && Number(vFixed) === 0; i++) {
                         vFixed = v.toFixed(i);
-                        if(i > 3) { vFixed = "-"; last = ""; break;}
+                        const displayLimit = 4; //小数点第N位まで表示
+                        if(i >= displayLimit) { vFixed = "-"; last = ""; break;}
                     }
                     break;
                 case "string":
@@ -445,7 +446,7 @@ const Column = class {
                 }
 
                 //textContent
-                cell.textContent = fix(v1);
+                cell.textContent = fix(v1, {rID:rID});
 
                 if (this.viewType == "reload") {
                     if (v2 != 0) cell.textContent = cell.textContent + " + " + fix(v2);
