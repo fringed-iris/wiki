@@ -28,7 +28,10 @@ function generateCodeIn(whole) {
     }
     controlBox.appendChild(button);
 
-    const functionList = [{funcName:"getDropTable",description:"あるbaseChanceのjsonを生成する",box:null,},{funcName:"getDropTableZip",description:"あるbaseChanceのjsonを生成する（圧縮済）",box:null,}];
+    const functionList = [
+        {funcName:"getDropTable",description:"あるbaseChanceのjsonを生成する",box:null,},
+        {funcName:"getDropTableZip",description:"あるbaseChanceのjsonを生成する（圧縮済）",box:null,},
+        {funcName:"getAll",description:"配列に含まれるbaseChanceのjsonを全て生成する",box:null,}];
     functionList.forEach((e, i) => {
         const box = document.createElement("div");
         const h4 = document.createElement("h4");

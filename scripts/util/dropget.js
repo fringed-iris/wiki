@@ -22,9 +22,9 @@ console.log(dropTableStr);`,
         getDropTableZip: `let t="[";for(let m=0;m<${window.florr.rarity.length};m++){if(m!==0)t+=",";let l="[";for(let p=0;p<${window.florr.rarity.length};p++){if(p!==0)l+=",";let d=florrio.utils.calculateDropChance(${baseChance},m,p).toFixed(8);if(d==0)d="0";l+=d}l+="]";t+=l}t+="]";console.log(t);`,
     }
     main.getAll = `
-const BaseChanceArr = ＜入力＞;
+const baseChanceArr = ＜入力＞;
 let wholeStr = "";
-BaseChanceArr.forEach(baseChance => {
+baseChanceArr.forEach((baseChance, i) => {
     let dropTableStr = "[";
     for(let mob = 0; mob < ${window.florr.rarity.length}; mob++) { //mob
         if(mob !== 0) dropTableStr += ","
@@ -39,7 +39,8 @@ BaseChanceArr.forEach(baseChance => {
         dropTableStr += dropListStr;
     }
     dropTableStr += "]";
-    wholeStr += "'" + baseChanceArr.toString() + "': " + dropTableStr + ",";
+    wholeStr += "'" + baseChance.toString() + "': " + dropTableStr;
+    if(i !== baseChanceArr.length - 1) wholeStr += ",";
 });
 console.log(wholeStr);`
     return main;
