@@ -104,11 +104,8 @@ function generateSideDiv(petals, mobs, chanceStr) {
     petals.forEach(petal => {
         const pName = petal[0], pRarity = petal[1];
         const minidiv = document.createElement("div");
-        minidiv.innerHTML = `<a href="/wiki/${pName}">${pName}</a><br>`;
-        const img = document.createElement("img");
-        img.style = imgStyle;
-        img.src = "/image/" + convertPetalIntoImageName(pName, pRarity);
-        minidiv.appendChild(img);
+        const src = "/image/" + convertPetalIntoImageName(pName, pRarity);
+        minidiv.innerHTML = `<a href="/wiki/${pName}">${pName}<br><img src="${src}" style="${imgStyle}"></a>`;
         minidiv.style = minidivStyle;
         div.appendChild(minidiv);
     })
@@ -116,12 +113,9 @@ function generateSideDiv(petals, mobs, chanceStr) {
     mobs.forEach(mob => {
         const mName = mob[0], mRarity = mob[1];
         const minidiv = document.createElement("div");
-        minidiv.innerHTML = `<a href="/wiki/${mName} (mob)">${mName}</a><br>`;
+        const src = "/image/" + convertMobIntoImageName(mName, mRarity);
+        minidiv.innerHTML = `<a href="/wiki/${mName} (mob)">${mName}<br><img src="${src}" style="${imgStyle}"></a></a>`;
         minidiv.style = minidivStyle;
-        const img = document.createElement("img");
-        img.style = imgStyle;
-        img.src = "/image/" + convertMobIntoImageName(mName, mRarity);
-        minidiv.appendChild(img);
         div.appendChild(minidiv);
     })
 
