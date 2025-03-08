@@ -114,7 +114,7 @@ function generateSideDiv(petals, mobs, chanceStr) {
         const mName = mob[0], mRarity = mob[1];
         const minidiv = document.createElement("div");
         const src = "/image/" + convertMobIntoImageName(mName, mRarity);
-        minidiv.innerHTML = `<a href="/wiki/${mName} (mob)">${mName}</a><br><a href="/wiki/${mName}"><img src="${src}" style="${imgStyle}"></a>`;
+        minidiv.innerHTML = `<a href="/wiki/${mName} (mob)">${mName}</a><br><a href="/wiki/${mName} (mob)"><img src="${src}" style="${imgStyle}"></a>`;
         minidiv.style = minidivStyle;
         div.appendChild(minidiv);
     })
