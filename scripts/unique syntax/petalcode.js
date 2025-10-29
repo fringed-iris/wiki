@@ -377,6 +377,7 @@ export const main = ($) => {
             DEFAULT_LABEL[5],
             DEFAULT_LABEL[6],
             DEFAULT_LABEL[7],
+            DEFAULT_LABEL[8],
 
         ]);
         const MEDIC = createPullDownMenu([
@@ -389,11 +390,14 @@ export const main = ($) => {
             DEFAULT_LABEL[5],
             DEFAULT_LABEL[6],
             DEFAULT_LABEL[7],
+            DEFAULT_LABEL[8],
         ]);
 
         const DUPLICATOR = createPullDownMenu([
             DEFAULT_LABEL_NONE,
-            DEFAULT_LABEL[2],
+            DEFAULT_LABEL[5],
+            DEFAULT_LABEL[6],
+            DEFAULT_LABEL[7],
         ]);
 
         const POISON = createPullDownMenu([
@@ -406,6 +410,7 @@ export const main = ($) => {
             DEFAULT_LABEL[5],
             DEFAULT_LABEL[6],
             DEFAULT_LABEL[7],
+            DEFAULT_LABEL[8],
         ]);
 
         const CPOISON = createPullDownMenu([
