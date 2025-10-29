@@ -271,7 +271,7 @@ const Field = class {
                     value = calced[rID] * this.talentsFactor[this.relatedTalent];
                     break;
                 case "duplicator":
-                    if (calced[rID] >= 2) {
+                    if (calced[rID] >= 5) {
                         value = calced[rID] + this.talentsFactor.duplicator;
                     } else {
                         value = calced[rID];
@@ -533,6 +533,12 @@ export const PulldownMenufyHost = class {
             value: 7,
             color: window.florr.rarity.color.text["Sp"],
             backgroundColor: window.florr.rarity.color.background["Sp"]
+        },
+        {
+            label: "Unique",
+            value: 8,
+            color: window.florr.rarity.color.text["Uq"],
+            backgroundColor: window.florr.rarity.color.background["Uq"]
         }
     ]
 
