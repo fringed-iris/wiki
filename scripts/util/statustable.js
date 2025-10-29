@@ -271,7 +271,7 @@ const Field = class {
                     value = calced[rID] * this.talentsFactor[this.relatedTalent];
                     break;
                 case "duplicator":
-                    if (calced[rID] >= 5) {
+                    if (calced[rID] >= 2) {
                         value = calced[rID] + this.talentsFactor.duplicator;
                     } else {
                         value = calced[rID];
