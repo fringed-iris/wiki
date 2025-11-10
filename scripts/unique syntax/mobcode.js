@@ -60,6 +60,7 @@ export const main = ($) => {
                         //other
                         Fopts.base = options.base;
                         Fopts.increase = options.increase;
+                        Fopts.magnification = options.magnification;
                         if (opts.type == "rarity") Fopts.uniqueDatas = options.uniqueDatas ?? options.uniqueRarityNumbers; //後方互換
                         if (opts.type == "unique") Fopts.uniqueDatas = options.uniqueDatas;
                         Fopts.baseFieldId = options.baseFieldId;
