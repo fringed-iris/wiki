@@ -395,7 +395,7 @@ export const main = ($) => {
 
         const DUPLICATOR = createPullDownMenu([
             DEFAULT_LABEL_NONE,
-            DEFAULT_LABEL[5],
+            DEFAULT_LABEL[4],
             DEFAULT_LABEL[6],
             DEFAULT_LABEL[7],
         ]);
