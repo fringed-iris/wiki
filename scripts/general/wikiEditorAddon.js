@@ -1,4 +1,7 @@
 export function main() {
+
+    /** @typedef {{toolbar:HTMLElement, editingField:HTMLElement}} Options */
+
     const newColor = (rabel, color) => { return { rabel, color } };
 
     const colors = [
@@ -45,6 +48,31 @@ export function main() {
         },
     ]
 
+        const SCRIPTS = [
+        {
+            title: "petalcode",
+            template:
+`&spanclass(petalcode){
+    name: "", //ペタル名
+    petalCount: 1, //ペタル個数
+    baseHealth: 10, //ペタルCm総体力
+    baseDamage: 10, //ペタルCm総攻撃力
+    reloadTime: 2.5, //再生時間
+    secondReloadTime: 0.5, //第２再生時間
+    leastRarity: 0, //最低レアリティ
+    specialStatus: [
+        {
+            name: "", //特殊ステータス名
+            type: "normal", //計算方式
+            base: 1, //Cm値
+            width: 80, //幅
+        }
+    ]
+    //詳しくはpetalcode (スクリプト)を参照
+}`
+        }
+    ]
+
     const createElement = {
         ribbon(options = {}) {
             const DIV = document.createElement("div");
@@ -84,9 +112,23 @@ export function main() {
 
             return DIV_TOP;
         },
+        /** @param {{ className: string, handler: function, label: string }} options */
+        insertButton(options) {
+            const DIV_TOP = document.createElement("div");
+            DIV_TOP.classList.add(options.className);
+
+            const BUTTON = document.createElement("button");
+            BUTTON.addEventListener("click", options.handler);
+            BUTTON.textContent = options.label;
+
+            DIV_TOP.appendChild(BUTTON);
+
+            return DIV_TOP;
+        },
     }
 
-    const main = (options = {}) => {
+    /** @param {Options} options */
+    const createColorPaletteMain = (options = {}) => {
         const COLOR_PALETTE = createElement.ribbon({
             id: "colorPalette",
             className: "ribbon_title",
@@ -142,6 +184,33 @@ export function main() {
         });
 
         options.toolbar.after(COLOR_PALETTE);
+    }
+
+    /** @param {Options} options */
+    const createInsertScriptPanelMain = (options = {}) => {
+        const PANEL = createElement.ribbon({
+            id: "insertScriptPanel",
+            className: "ribbon_title",
+            title: "スクリプト",
+        });
+
+        SCRIPTS.forEach(script => {
+            const handler = function() {}
+            const BUTTON = createElement.insertButton({
+                className: "insertScriptPanel_button",
+                handler: handler,
+                label: script.title,
+            });
+            PANEL.appendChild(BUTTON);
+        });
+
+        options.toolbar.after(PANEL);
+    }
+
+    /** @param {Options} options */
+    const main = (options = {}) => {
+        createColorPaletteMain(options);
+        createInsertScriptPanelMain(options);
     }
 
     if (
