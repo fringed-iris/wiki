@@ -1,3 +1,19 @@
+/** 文字列２つを選択範囲の周りに挿入した文字列を返す
+ * @param {string} value 操作対象の文字列
+ * @param {number} selectionStart 選択開始位置（範囲に含まれる）
+ * @param {number} selectionEnd 選択終了位置（範囲に含まれない）
+ * @param {string} strInsertBefore 選択範囲の直前に挿入する文字列
+ * @param {string} strInsertAfter 選択範囲の直後に挿入する文字列
+ */
+const insertStringAroundSelection = function (value, selectionStart, selectionEnd, strInsertBefore, strInsertAfter) {
+    const TEXT = {
+        before: value.slice(0, selectionStart),
+        selecting: value.slice(selectionStart, selectionEnd),
+        after: value.slice(selectionEnd, value.length),
+    }
+    return TEXT.before + strInsertBefore + TEXT.selecting + strInsertAfter + TEXT.after;
+}
+
 export function main() {
 
     /** @typedef {{toolbar:HTMLElement, editingField:HTMLElement}} Options */
@@ -48,11 +64,11 @@ export function main() {
         },
     ]
 
-        const SCRIPTS = [
+    const SCRIPTS = [
         {
             title: "petalcode",
             template:
-`&spanclass(petalcode){
+                `&spanclass(petalcode){
     name: "", //ペタル名
     petalCount: 1, //ペタル個数
     baseHealth: 10, //ペタルCm総体力
@@ -151,28 +167,16 @@ export function main() {
                     rabel: colorInfo.rabel,
                     className: "colorPalette_color",
                     handler() {
-                        const EDITING_FIELD = {
-                            value: options.editingField.value,
-                            start: options.editingField.selectionStart,
-                            end: options.editingField.selectionEnd,
-                        }
-                        const TEXT = {
-                            before: EDITING_FIELD.value.slice(
-                                0,
-                                EDITING_FIELD.start
-                            ),
-                            selecting: EDITING_FIELD.value.slice(
-                                EDITING_FIELD.start,
-                                EDITING_FIELD.end
-                            ),
-                            after: EDITING_FIELD.value.slice(
-                                EDITING_FIELD.end,
-                                EDITING_FIELD.value.length
-                            ),
-                        }
-
-                        options.editingField.value = `${TEXT.before}&color(${colorInfo.color}){${TEXT.selecting}}${TEXT.after}`;
-                        options.editingField.selectionStart, options.editingField.selectionEnd = EDITING_FIELD.start;
+                        const edfd = options.editingField;
+                        const selectionStartMemo = options.editingField.selectionStart;
+                        edfd.value = insertStringAroundSelection(
+                            edfd.value,
+                            edfd.selectionStart,
+                            edfd.selectionEnd,
+                            `&color(${colorInfo.color}){`,
+                            "}"
+                        );
+                        options.editingField.selectionEnd = selectionStartMemo;
                     }
                 });
 
@@ -195,7 +199,7 @@ export function main() {
         });
 
         SCRIPTS.forEach(script => {
-            const handler = function() {}
+            const handler = function () { }
             const BUTTON = createElement.insertButton({
                 className: "insertScriptPanel_button",
                 handler: handler,
