@@ -4,6 +4,7 @@
  * @param {number} selectionEnd 選択終了位置（範囲に含まれない）
  * @param {string} strInsertBefore 選択範囲の直前に挿入する文字列
  * @param {string} strInsertAfter 選択範囲の直後に挿入する文字列
+ * @return { string }
  */
 const insertStringAroundSelection = function (value, selectionStart, selectionEnd, strInsertBefore, strInsertAfter) {
     const TEXT = {
@@ -16,7 +17,7 @@ const insertStringAroundSelection = function (value, selectionStart, selectionEn
 
 export function main() {
 
-    /** @typedef {{toolbar:HTMLElement, editingField:HTMLElement}} Options */
+    /** @typedef {{toolbar:HTMLElement, editingField:HTMLTextAreaElement}} Options */
 
     const newColor = (rabel, color) => { return { rabel, color } };
 
@@ -143,6 +144,23 @@ export function main() {
         },
     }
 
+    /** textareaの選択範囲の前後に文字列を挿入する
+     * @param { HTMLTextAreaElement } element
+     * @param {string} strInsertBefore 選択範囲の直前に挿入する文字列
+     * @param {string} strInsertAfter 選択範囲の直後に挿入する文字列
+     * */
+    const insertStringAroundTextAreaSelection = function (element, strInsertBefore, strInsertAfter) {
+        const selectionStartMemo = element.selectionStart;
+        element.value = insertStringAroundSelection(
+            element.value,
+            element.selectionStart,
+            element.selectionEnd,
+            strInsertBefore,
+            strInsertAfter
+        );
+        element.selectionEnd = selectionStartMemo;
+    }
+
     /** @param {Options} options */
     const createColorPaletteMain = (options = {}) => {
         const COLOR_PALETTE = createElement.ribbon({
@@ -166,18 +184,7 @@ export function main() {
                     color: colorInfo.color,
                     rabel: colorInfo.rabel,
                     className: "colorPalette_color",
-                    handler() {
-                        const edfd = options.editingField;
-                        const selectionStartMemo = options.editingField.selectionStart;
-                        edfd.value = insertStringAroundSelection(
-                            edfd.value,
-                            edfd.selectionStart,
-                            edfd.selectionEnd,
-                            `&color(${colorInfo.color}){`,
-                            "}"
-                        );
-                        options.editingField.selectionEnd = selectionStartMemo;
-                    }
+                    handler: () => insertStringAroundTextAreaSelection(options.editingField, `&color(${colorInfo.color}){`, "}"),
                 });
 
                 INCLUDE_COLORS.appendChild(newColor);
