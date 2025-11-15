@@ -69,7 +69,8 @@ export function main() {
         {
             title: "petalcode",
             template:
-                `&spanclass(petalcode){
+                `
+&spanclass(petalcode){
     name: "", //ペタル名
     petalCount: 1, //ペタル個数
     baseHealth: 10, //ペタルCm総体力
@@ -86,8 +87,8 @@ export function main() {
         }
     ]
     //詳しくはpetalcode (スクリプト)を参照
-}`
-        }
+}
+`       }
     ]
 
     const createElement = {
@@ -206,7 +207,7 @@ export function main() {
         });
 
         SCRIPTS.forEach(script => {
-            const handler = function () { }
+            const handler = () => insertStringAroundTextAreaSelection(options.editingField, script.template, "");
             const BUTTON = createElement.insertButton({
                 className: "insertScriptPanel_button",
                 handler: handler,
