@@ -135,9 +135,10 @@ export function main() {
             const DIV_TOP = document.createElement("div");
             DIV_TOP.classList.add(options.className);
 
-            const BUTTON = document.createElement("button");
+            const BUTTON = document.createElement("input");
+            BUTTON.type = "button";
             BUTTON.addEventListener("click", options.handler);
-            BUTTON.textContent = options.label;
+            BUTTON.value = options.label;
 
             DIV_TOP.appendChild(BUTTON);
 
