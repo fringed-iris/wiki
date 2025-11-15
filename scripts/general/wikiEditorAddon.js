@@ -205,6 +205,7 @@ export function main() {
             className: "ribbon_title",
             title: "スクリプト",
         });
+        PANEL.classList.add("editingPanel");
 
         SCRIPTS.forEach(script => {
             const handler = () => insertStringAroundTextAreaSelection(options.editingField, script.template, "");

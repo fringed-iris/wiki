@@ -1945,6 +1945,21 @@ ul.user_comment_list .ulist3 {
 	border: var(--mlt-box_border_thin)
 }
 
+/* 編集メニュー カスタムパネル */
+.editingPanel {
+	background-color: var(--c-subTheme_light);
+	border-radius: var(--val-borderRadius);
+	border: var(--mlt-box_border);
+	margin-bottom: 10px;
+	padding: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	color: var(--c-text);
+	flex-direction: column;
+	font-size: .8em
+}
+
+/* 編集メニュー 独自カラーパレット */
 #colorPalette {
 	background-color: var(--c-subTheme_light);
 	border-radius: var(--val-borderRadius);
